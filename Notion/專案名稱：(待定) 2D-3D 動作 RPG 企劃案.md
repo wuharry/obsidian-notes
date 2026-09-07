@@ -25,7 +25,7 @@ notion-id: 97a25b0a5267445e944c54646db25a92
 | 地圖移動 | 已實作／呈現待複驗 | `apps/trpg-web/app/try/components/Playground.tsx` 的旅行請求、玩家 action entry 與抵達描述 | B006：Harvey 當場點擊紀錄未顯示；本次標明「透過地圖」，不認定是錯誤目的地路由 |
 | 上下文 | 已實作／待改善 | `toRecentTurns()` 傳近期對話；`dmContext.ts` 組上下文 | 有傳送不代表模型有正確承接；不能宣稱完全沒有 context |
 | 世界變化與收束 | 已實作／待調查 | `worldUpdateService.ts`、`narrativeRecovery.ts` 與劇本場景出口 | B001：缺終局事件，尚未確認過早收束走哪條路徑 |
-| 故事匯出 | 本機接線未完成／版本待核對 | `/try` 的 `JourneyExportBar` 已有外觀，目前 handler 為 `pendingJourneyExport` | 使用者已有匯出／整理文字，來源與當場版本未確認，不據此否定使用者回報 |
+| 故事匯出 | 已接線／真人待驗收 | `/try` 可在冒險途中與結局下載／複製，包含地圖、澄清與檢定紀錄 | 只包含本次開頁的對話，重整前未保存的紀錄無法補回；B011 待真人驗收 |
 
 ## 已有世界觀與第一章委託
 

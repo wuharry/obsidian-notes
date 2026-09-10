@@ -48,20 +48,20 @@ updated: 2026-09-07
 
 ## 三、已實作進度表（優先閱讀）
 
-| 核心系統 | 實作狀態 | 目前具體內容 | 程式依據（repo 相對路徑） |
-| :--- | :--- | :--- | :--- |
-| **對局勝負** | 🟢 已實作 | 雙方本體、攻擊玩家、死亡與再戰／返回流程 | `src/hero/hero.gd`、`src/battle_manager/battle_manager.gd` |
-| **手牌與牌堆** | 🟢 已實作 | 起手、每回合抽牌、滿手爆牌、有限牌堆、墓地 | `src/card/deck.gd`、`src/play_hand/player_hand.gd` |
-| **路線與攻擊** | 🟢 已實作 | 前後排卡槽、前排阻擋、雙向傷害、召喚暈眩 | `src/player_board/player_board.gd` |
-| **魔力與回收** | 🟢 已實作 | 成長回滿、費用檢查、拖牌至墓地回魔與隔回合冷卻 | `BattleManager.apply_discard_for_mana()` |
-| **五類卡牌** | 🟢 已實作 | 從者、靈裝、秘術、瞬咒、伏印及高階卡 | `src/card/card_data.gd`、`data/cards/` |
-| **從者效果** | 🟢 已實作 | 主動技、戰吼、衝鋒/飛行/嘲諷/不滅/鐵壁/連擊/吸血/貫穿 | `src/card/skill_data.gd`、`src/card/card.gd` |
-| **靈裝／伏印** | 🟢 已實作 | 靈裝宿主與新蓋舊、伏印宿主與隱藏警戒、離場入墓 | `BattleManager.attach_equip()`、`set_ward()` |
-| **瞬咒反制** | 🟡 部分實作 | 有限反制窗口及依事件觸發；未實作任意長度完整 Stack | `BattleManager.quick_candidate()` |
-| **單人 AI** | 🟢 已實作 | 選擇合法出牌、攻擊、技能、靈裝、伏印、反制與回魔行動 | `src/ai/enemy_ai.gd` |
-| **連線對戰** | 🟢 已實作／待驗 | 選單接 `NetClient`，伺服器排隊、配對與房間流程 | `src/main_menu/main_menu.gd`、`src/net/net_client.gd` |
-| **操作與展示** | 🟢 已實作 | 拖曳、懸停預覽、扇形手牌、立牌動畫、圖鑑、傷害治療回饋 | `src/card_manager/card_manager.gd`、`card_gallery.gd` |
-| **場景與設定** | 🟢 已實作／待驗 | 森林／洞窟／冰原對戰、城鎮主選單；繁中／英文、畫質設定 | `src/environment/`、`src/settings/` |
+| 核心系統      | 實作狀態      | 目前具體內容                         | 程式依據（repo 相對路徑）                                           |
+| :-------- | :-------- | :----------------------------- | :-------------------------------------------------------- |
+| **對局勝負**  | 🟢 已實作    | 雙方本體、攻擊玩家、死亡與再戰／返回流程           | `src/hero/hero.gd`、`src/battle_manager/battle_manager.gd` |
+| **手牌與牌堆** | 🟢 已實作    | 起手、每回合抽牌、滿手爆牌、有限牌堆、墓地          | `src/card/deck.gd`、`src/play_hand/player_hand.gd`         |
+| **路線與攻擊** | 🟢 已實作    | 前後排卡槽、前排阻擋、雙向傷害、召喚暈眩           | `src/player_board/player_board.gd`                        |
+| **魔力與回收** | 🟢 已實作    | 成長回滿、費用檢查、拖牌至墓地回魔與隔回合冷卻        | `BattleManager.apply_discard_for_mana()`                  |
+| **五類卡牌**  | 🟢 已實作    | 從者、靈裝、秘術、瞬咒、伏印及高階卡             | `src/card/card_data.gd`、`data/cards/`                     |
+| **從者效果**  | 🟢 已實作    | 主動技、戰吼、衝鋒/飛行/嘲諷/不滅/鐵壁/連擊/吸血/貫穿 | `src/card/skill_data.gd`、`src/card/card.gd`               |
+| **靈裝／伏印** | 🟢 已實作    | 靈裝宿主與新蓋舊、伏印宿主與隱藏警戒、離場入墓        | `BattleManager.attach_equip()`、`set_ward()`               |
+| **瞬咒反制**  | 🟡 部分實作   | 有限反制窗口及依事件觸發；未實作任意長度完整 Stack   | `BattleManager.quick_candidate()`                         |
+| **單人 AI** | 🟢 已實作    | 選擇合法出牌、攻擊、技能、靈裝、伏印、反制與回魔行動     | `src/ai/enemy_ai.gd`                                      |
+| **連線對戰**  | 🟢 已實作／待驗 | 選單接 `NetClient`，伺服器排隊、配對與房間流程  | `src/main_menu/main_menu.gd`、`src/net/net_client.gd`      |
+| **操作與展示** | 🟢 已實作    | 拖曳、懸停預覽、扇形手牌、立牌動畫、圖鑑、傷害治療回饋    | `src/card_manager/card_manager.gd`、`card_gallery.gd`      |
+| **場景與設定** | 🟢 已實作／待驗 | 森林／洞窟／冰原對戰、城鎮主選單；繁中／英文、畫質設定    | `src/environment/`、`src/settings/`                        |
 
 ---
 

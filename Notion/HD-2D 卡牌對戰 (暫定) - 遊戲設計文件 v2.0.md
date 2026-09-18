@@ -148,6 +148,7 @@ graph LR
 | **資源過牌濾牌** | 未實作 | 缺乏入場/亡語過牌與二選一濾牌，第 5 回合常入「抽一打一」死局 | 列入 P0 待辦清單實作 |
 | **卡槽防死鎖** | 未實作 | 5×2 前後排缺乏主動退場或換位，低攻肉盾互卡前排容易引發場面死棋 | 列入 P1 待辦清單實作 |
 | **戰鬥打擊感 (Juice)** | 部分實作 | 已有角色動畫與 3D 空間/秘術 VFX；缺乏攻擊衝刺位移、Hit Stop 與鏡頭微震 | 列入 P0 待辦清單實作 |
+| **待生成卡牌與卡圖候選** | 部分實作 | 具備 132 張基礎卡，但史萊姆衍生卡缺失、部分防禦怪超模；已建立 HD-2D 像素卡圖生成管線與候選庫 | 詳見 repo 之 [docs/todo_card_generation.md](../../repo/card-game-demo-4.5--main/docs/todo_card_generation.md) |
 | **世界觀與職業** | 草案階段 | 卡名與角色外觀不等於完整世界觀或種族職業規則 | 保留原草案，等待具體設定補齊 |
 | **暗巷／賭場／天梯** | 未實作 | 無對應探索、賭卡、拍賣交易與排位賽流程 | 遠期展望，保留原設計 |
 | **稀有度與色碼** | 部分實作 | 卡面已有型別章與數值，未完全套用原 v2.0 色碼系統 | 另做視覺畫面與資源對照 |
@@ -214,6 +215,8 @@ graph LR
 - [對局結算](../../repo/card-game-demo-4.5--main/src/battle_manager/battle_manager.gd)
 - [目前連線入口](../../repo/card-game-demo-4.5--main/src/net/net_client.gd)
 - [Demo 整備與可玩性提升計畫](../../repo/card-game-demo-4.5--main/docs/demo_readiness.md)
+- [待生成卡牌與候選圖檔清單](../../repo/card-game-demo-4.5--main/docs/todo_card_generation.md)
+- [死靈流派構想草案與架構分析](../../repo/card-game-demo-4.5--main/docs/necromancy_archetype.md)
 
 ## 八、原 v2.0 完整企劃案（設計保留區）
 

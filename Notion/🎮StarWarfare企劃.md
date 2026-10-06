@@ -6,13 +6,13 @@ tags:
   - godot
   - tps
   - gamedesign
-updated: 2026-09-10
+updated: 2026-10-06
 ---
 
 # 🚀 StarWarfare — 已實作基礎與未來展望
 
 > [!abstract] **文件更新與工作樹說明**
-> - **更新日期**：2026-09-10 ｜ 整理版 v0.5 ｜ 新增 [[#Current 進度（2026-09）|Current 進度]]、[[#未來困境與風險（借鏡）|未來困境與風險]]；原 v0.3 展望仍保留於文末。
+> - **更新日期**：2026-10-06 ｜ 整理版 v0.6 ｜ 新增 [[#Current 進度（2026-10 最新進展）|Current 進度（2026-10）]]、裝甲流水線與著色器降噪、武器姿態與工蟲 AI；保留未來困境與原 v0.3 展望。
 > - **核對工作樹**：本機 `star-warfare-godot`；`star-warfare` 是原 Unity 復原來源，**不能把原始碼或素材存在直接當成 Godot 功能已完成**。保留原檔名與 `notion-id`。
 
 > [!tip] **章節快速導航**
@@ -23,7 +23,7 @@ updated: 2026-09-10
 > - [[#五、目前遊戲流程與展望關係|五、遊戲流程與展望關係]]
 > - [[#六、必須先討論的原案衝突|六、原案衝突分析]]
 > - [[#七、建議後續順序（供討論）|七、建議開發順序]]
-> - [[#Current 進度（2026-09）|Current 進度]]
+> - [[#Current 進度（2026-10 最新進展）|Current 進度]]
 > - [[#未來困境與風險（借鏡）|未來困境與風險]]
 > - [[#原 v0.3 完整展望（設計保留區）|八、未來展望與數值框架（原稿）]]
 
@@ -52,15 +52,15 @@ updated: 2026-09-10
 | **單人戰役** | 🟢 已實作 | 原關卡載入、敵人波次、Boss、勝敗、掉落與進度 | `scripts/game/game_world.gd`、`scripts/core/game_state.gd` |
 | **原場景復原** | 🟢 已實作／視覺待複驗 | 原關卡地形、材質、碰撞、出生點、路徑節點與選單縮圖 | `assets/models/levels/`、`scripts/core/unity_collider_builder.gd` |
 | **第三人稱操作** | 🟢 已實作 | 肩後鏡頭、移動、衝刺、聚焦瞄準、射擊、切槍、受傷與護盾 | `scripts/game/player.gd` |
-| **武器系統** | 🟢 已實作 | 原武器資料、射擊類型、武器模型與攻擊回饋 | `GameState.WEAPON_ROWS`、`scripts/game/projectile.gd` |
+| **武器系統** | 🟢 已實作／持續調優 | 原武器資料、射擊類型、武器模型與攻擊回饋；修復武器姿態、手套縮放、背包材質；弓箭保持橫持並移除程序刀鞘；步槍腰射準心擴散（Bloom）演出；突擊步槍與自動武器持續射速提升 30% | `GameState.WEAPON_ROWS`、`scripts/game/projectile.gd`、`docs/WEAPON_AIMING.md` |
 | **彈匣與換彈** | 🟡 部分實作 | 指定武器具不同換彈方式、彈匣／彈殼演出，散彈可中斷裝填 | `GameState.RELOAD_PROFILES`、`scripts/game/player.gd` |
-| **裝甲／背包／套裝** | 🟢 已實作 | 原裝甲購買、裝備、四部位套裝、背包容量與外觀 | `scripts/core/armor_catalog.gd`、`scripts/core/game_state.gd` |
+| **裝甲／背包／套裝** | 🟢 已實作／管線打通 | 原裝甲購買、裝備、四部位套裝、背包容量與外觀；Strike、Titan、Hydra、Tank、Fortune、Viper 等裝甲資產已由 `adopted armor scenes` 整合至 runtime visuals，著色器光照降噪，Titan 圓形面罩精修與實機驗收 | `scripts/core/armor_catalog.gd`、`scripts/core/game_state.gd`、`docs/art/` |
 | **裝甲主動技能** | 🟢 已實作 | 原技能效果、持續時間、冷卻與 HUD 顯示 | `scripts/game/armor_power_controller.gd`、`scripts/ui/hud.gd` |
-| **商店與軍械庫** | 🟢 已實作 | 武器/裝甲分類、解鎖階級、Credits／Mithril 購買與持有預覽 | `scripts/ui/main_menu.gd`、`scripts/ui/unity_equipment_shell.gd` |
+| **商店與軍械庫** | 🟢 已實作 | 武器/裝甲分類、解鎖階級、Credits／Mithril 購買與持有預覽；軍械庫彈窗套用金屬質感 | `scripts/ui/main_menu.gd`、`scripts/ui/unity_equipment_shell.gd` |
 | **補給品商店** | 🟡 部分實作 | 已有分類、購買、庫存上限與保存；尚未接完整戰鬥使用接線 | `scripts/core/props_catalog.gd`、`GameState.purchase_prop()` |
-| **敵方 AI／難度** | 🟢 已實作／體驗待驗 | 追擊與路徑、戰術難度設定、包抄／攻擊名額／預警行為 | `scripts/game/enemy.gd`、`GameState.DIFFICULTY_PROFILES` |
+| **敵方 AI／難度** | 🟢 已實作／持續調優 | 追擊與路徑、戰術難度設定、包抄／攻擊名額／預警行為；統一工蟲手繪甲殼風格並接入戰術 AI 與節奏調節 | `scripts/game/enemy.gd`、`GameState.DIFFICULTY_PROFILES` |
 | **大陸戰場** | 🟢 已實作／體驗待驗 | 連續地形、原場景地標、動態載入與回收、區域遭遇 | `scripts/game/expanse_world.gd`、`expanse_terrain.gd` |
-| **存檔、語言與畫質** | 🟢 已實作 | 本機 JSON 保存、繁中／英文、畫質選項 | `scripts/core/game_state.gd`、`scripts/core/localization.gd` |
+| **存檔、語言與畫質** | 🟢 已實作 | 本機 JSON 保存、繁中／英文、即時畫質縮放；戰鬥中暫停選單；Windows Compatibility 驅動切換為 ANGLE 解決 NVIDIA 啟動崩潰 | `scripts/core/game_state.gd`、`scripts/core/localization.gd` |
 | **多輸入與音畫** | 🟢 已實作／實機待驗 | 鍵鼠、控制器、手機雙搖桿；復原音樂音效、角色動畫、HUD | `scripts/ui/virtual_joystick.gd`、`scripts/core/audio_director.gd` |
 
 ---
@@ -185,10 +185,28 @@ graph LR
 - [大陸戰場](../../repo/star-warfare-godot/scripts/game/expanse_world.gd)
 - [換彈回歸測試](../../repo/star-warfare-godot/tests/reload_system_test.gd)
 
-## Current 進度（2026-09）
+## Current 進度（2026-10 最新進展）
 
 > [!summary] **一句話**
-> 現在是「原作離線復原版已可玩」的階段；產品方向已寫成手機優先的 PvE／PvP 成長射擊，但新成長、連線、經濟幾乎都還沒開工。
+> 離線復原版進入「美術管線標準化、打擊感與手感重量提升」階段；已打通裝甲資產整合工具鏈、修復武器手感與姿態、工蟲戰術 AI 入場，但多模式連線與全套數值經濟仍維持嚴格範圍控制。
+
+### 2026-10 最新工程與美術推進（Recent Commits）
+
+1. **裝甲復原流水線與著色器光照降噪 (Armor Pipeline & Restoration)**
+   - 整合 Strike、Titan、Hydra、Tank、Fortune、Viper 等裝甲資產進入 `adopted armor scenes` 運行期視覺管線，並建立自動化 roundtrip 整合測試與畫廊工具鏈。
+   - 裝甲著色器光照降噪（Shader denoise / lighting blend），統一金屬反射與高光。
+   - Titan 圓形面罩 (Titan round visor) 經過多輪驗收迭代完成精修；Cygni、Pegasus、Viper 等頭盔面罩與色調校正完成。
+2. **戰鬥手感與武器姿態修復 (Combat Feel & Weapon Ergonomics)**
+   - 修正弓箭橫持問題並移除程序刀鞘；修復手套縮放、背包材質。
+   - 步槍腰射準心擴散演出（Hip-fire reticle bloom with segment outward expansion）。
+   - 數值微調：突擊步槍與自動武器持續射速提升 30%，強化火力壓制節奏。
+3. **敵方 AI 與戰鬥節奏 (Tactical Enemy AI)**
+   - 統一工蟲手繪甲殼風格，並正式接入戰術 AI 與節奏調節器，改善圍攻包抄反饋。
+4. **系統穩定度與相容性 (Engine & UI Polish)**
+   - Windows Compatibility 驅動切換為 ANGLE，修復 NVIDIA 顯卡環境下的啟動崩潰。
+   - 實作戰鬥中暫停選單（Pause Options Menu），支援即時畫質縮放調整。
+
+---
 
 ### 產品方向（文件已定、程式未到）
 
@@ -205,7 +223,7 @@ graph LR
 
 | 階段 | 狀態 | 現況摘要 |
 | :--- | :--- | :--- |
-| **1 穩定底盤** | 🟡 進行中／待實機複驗 | 戰役、大陸、商店／裝甲、存檔、多輸入、部分換彈樣板已在；仍有體驗與畫面待驗 |
+| **1 穩定底盤** | 🟢 已具雛形／持續打磨 | 戰役、大陸、商店／裝甲、存檔、多輸入、裝甲流水線與換彈樣板已在；武器手感與工蟲 AI 已調優 |
 | **2 統一生長規格** | 🔴 未開始 | 等級／配件／DPS 公式仍有原案衝突，尚未定案重算 |
 | **3 完整裝備流程** | 🔴 未開始 | 尚無「取得 → 裝配／升級 → 戰鬥生效 → 保存」端到端樣板槍 |
 | **4 寶箱與新裝甲經濟** | 🔴 未開始 | 品質、模塊、選槽、鑰匙／機率皆屬展望 |
@@ -217,8 +235,9 @@ graph LR
 | :--- | :--- |
 | 單人 Level 1–8、波次／Boss、掉落與本機存檔 | 主線世界觀、進階 Boss、長期任務循環 |
 | 大陸戰場串流與區域遭遇 | 大陸任務／進度經濟閉環 |
-| 47 武器、109 裝甲／背包、原商店與技能 | 配件樹、質變池、寶箱品質／模塊 |
-| 5 把樣板換彈、肩後瞄準 | 瞄具條件第一人稱、副模式、備彈正式化 |
+| 47 武器、109 裝甲／背包、原商店與技能；Strike/Titan/Viper 等裝甲管線打通 | 配件樹、質變池、寶箱品質／模塊 |
+| 5 把樣板換彈、肩後瞄準、步槍準心擴散 | 瞄具條件第一人稱、副模式、備彈正式化 |
+| 工蟲戰術 AI、節奏調節、戰鬥暫停與即時畫質縮放 | 完整怪物行為樹多樣性、菁英詞綴 |
 | PvP 地圖離線預覽 | 配對、P2P／專服、排位、標準化房 |
 | Credits／Mithril 虛擬商店 | 真實付費、帳號、鑰匙與長期經濟 |
 

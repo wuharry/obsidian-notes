@@ -6,19 +6,20 @@ tags:
   - hd-2d
   - godot
   - gamedesign
-updated: 2026-10-14
+updated: 2026-10-15
 ---
 
 # 🃏 HD-2D 卡牌對戰 — 現行設計與開發進度
 
 > [!abstract] **文件更新與核對說明**
-> - **更新日期：2026-10-14，整理版 v2.7。** 依 `/Users/harvey/repo/card-game-demo-4.5--main` 的目前工作樹核對，包含未提交修改；HEAD `b06fa3d2`，`project.godot` 版本字串 `2026.10.14-R8`。
-> - **工作樹與已發布要分開看：** 工作樹是 R8；GitHub Release 的 R8 已於 2026-10-14 07:44 UTC 發布，R7／R6 已改回 Draft，R5 的玩家包與伺服器包都已撤下。
-> - **本輪修正的錯誤：** 舊版寫「PvP 最後十六秒倒數」，實際是十五秒（`src/net/pvp_turn_clock.gd:4` `WARNING_SECONDS := 15`）；協定版本十六是另一回事，兩者被混在一起。
-> - **本輪新增現況：** 玩家包隔離與 PCK 加密、掛名收尾與遊戲內著作權聲明、更新檢查、線上大廳與雲端 SQL 的實測證據、卡片與主選單 UI 盤點。
-> - **舊待辦已改正：** 自組牌、抽卡、帳號收藏、結界、派系換位、死靈與史萊姆卡、圖解教學都已有實作，不再標成未做。
-> - **真正缺少：** 特殊召喚、完整反制堆疊、通用移動／退場、天梯與交易、口袋／探索模式；另外有正式服務與真人流程待驗收。
-> - **保存範圍：** 上半部是現況，下半部「原 v2.0 完整企劃案」原文保留；檔名與 `notion-id` 不變。本輪另完成隨機先手、後援與空手補牌，執行背景測試；不開遊戲視窗、截圖或遠端部署。
+> - **更新日期：2026-10-15，整理版 v2.9。** R9 原始碼是 `8ec17cff`（`2026.10.14-R9`）；Android 修正已提交到 `origin/main` `0bc9950d`（`2026.10.15-R10`）。五-D 的「R9 證據」行號以 `8ec17cff` 為準，修正進度以 `0bc9950d` 為準。
+> - **發布現況：** GitHub Release `v2026.10.14-r9` 已於 2026-10-14 16:31 UTC 發布，含 Windows／macOS／Linux／Android 四平台。
+> - **Android 暫停下載：** 2026-10-15 實機試玩發現對局嚴重卡頓且記憶體不足、無法截圖且畫面模糊、操作仍是電腦版。官網 commit `a5c5c04` 已撤下載按鈕，線上 `/api/game-version` 已不列 Android；GitHub 附件仍公開，APK 已被下載 12 次。
+> - **R10 候選：** 18 項問題中 13 項已在程式或設定修正、4 項部分修正、1 項待實機；候選 APK 289 MiB（−34.68%），未簽章、未實機驗收，Android 仍暫停（見[[#D. Android 預覽版：實機未通過與修正進度|五-D]]）。
+> - **本輪新增（v2.9）：** 五-D 改以已提交的 `0bc9950d` 核對進度，新增「APK 還能再縮的地方」與「發布前關卡」。
+> - **沿用 v2.7：** 第四至六節的規則、卡池與原案差異未重新盤點；v2.7 已修正的 PvP 倒數為十五秒（`pvp_turn_clock.gd` `WARNING_SECONDS := 15`）。
+> - **真正缺少（玩法）：** 特殊召喚、完整反制堆疊、通用移動／退場、天梯與交易、口袋／探索模式；另外有正式服務與真人流程待驗收。
+> - **保存範圍：** 上半部是現況，下半部「原 v2.0 完整企劃案」原文保留；檔名與 `notion-id` 不變。本輪沒有開遊戲視窗、沒有用手機比例截圖、沒有修改遊戲程式。
 
 > [!tip] **章節快速導航**
 > - [[#一、閱讀方式與狀態定義|一、狀態定義]]
@@ -54,7 +55,7 @@ updated: 2026-10-14
 - **① 結論／根本原因：** 本作已是具備收藏、自組牌及多人房間的《暮色秘典》原型，已超過隨機發牌的對戰展示階段。
 - **② 怎麼解：** 保留「站位、魔力回收、從者／法術與反制」核心；玩家用持有卡自組牌，AI 使用內部主題預組。
 - **③ 為什麼這樣解：** 四路前後排、條件連動與派系效果已能構成準備和兌現；剩餘工作應分成玩法擴充、正式服務驗收與品質調整，不再把已有功能重做一次。
-- **④ 舉例：** 玩家可先抽新手卡，保存並選用合法牌組，挑戰 AI；外網正式入場另由帳號服務驗證雲端持卡。引擎為 Godot 4.7／Forward+。
+- **④ 舉例：** 玩家可先抽新手卡，保存並選用合法牌組，挑戰 AI；外網正式入場另由帳號服務驗證雲端持卡。引擎為 Godot 4.7.2：專案預設 Forward+，Windows 預設 Compatibility＋ANGLE，Android 實際使用 Mobile 渲染器（APK manifest `org.godotengine.rendering.method=mobile`）。
 
 ## 三、已實作進度表（優先閱讀）
 
@@ -83,10 +84,13 @@ updated: 2026-10-14
 | 新手教學與查閱 | 已實作 | 遊戲內圖解、詳細規則、卡圖鑑／我的收藏、召喚物與關鍵字說明、墓地與戰鬥紀錄 | `src/ui/player_guide_content.gd`、`effect_glossary.gd`、`src/battle_ui/battle_archive.gd` |
 | 載入、設定與音畫 | 已實作／品質待驗 | 分階段載入、繁中／英文、畫質／無障礙、配樂／環境聲、命中／格擋／狀態／死亡回饋 | `src/loading/`、`src/settings/`、`src/audio/`、`src/fx/` |
 | 場景與美術 | 已實作／尚未完成風格驗收 | 森林、洞窟、冰原及城鎮，地貌／光影／環境粒子；卡圖逐張審查仍有待重繪、校準與缺圖 | `src/environment/`、`docs/art/card-art-audit-20261012/README.md` |
-| 玩家包隔離 | 已實作／R8 待驗 | `exclude_filter` 排除 `src/server/*`、`deploy/*`、`tests/*`、`*.pem`／`*.key` 及三組未確認授權素材。R7 成品實測這些路徑皆為 0 命中，`public/SHA256SUMS` 與 GitHub 附件 digest 一致 | `export_presets.cfg`、`tests/exported_release_test.gd`、各版 `*-packed-validation.json` |
-| 玩家包加密 | 已實作／R8 待驗 | `encrypt_pck=true`，用自編譯的加密範本（`build/export-templates/4.7.2.encrypted/`），對 311 個卡牌／設定 `.res` 設 include filter，含 `account_service.tres` | `export_presets.cfg`、commit `318eec70` |
+| 玩家包隔離 | 已實作／R9 已做封裝檢查 | `exclude_filter` 排除 `src/server/*`、`deploy/*`、`tests/*`、`*.pem`／`*.key` 及三組未確認授權素材。R7 成品實測這些路徑皆為 0 命中；R9 官網版本說明記錄四平台各通過 332 項封裝資源檢查 | `export_presets.cfg`、`tests/exported_release_test.gd`、官網 `src/data/releases.ts` |
+| 玩家包加密 | 已實作（R9 四平台） | `encrypt_pck=true`，用自編譯的加密範本，對卡牌／設定 `.res` 設 include filter（R8 時為 311 個，含 `account_service.tres`）；R9 起範本改由私有 Actions 手動建置 | `export_presets.cfg`、commit `318eec70`、`ad87eefc`、`docs/release-encrypted-template-build.md` |
 | 掛名與著作權 | 已實作 | 未確認授權素材改為整組不出貨（非補作者名），遊戲內新增「著作權聲明」區；`credits_text_test` 100 檢查 0 失敗 | `CREDITS.md`、`assets/licenses/third-party-provenance-20261013.md`、`src/ui/credits_panel.gd` |
-| 更新檢查 | 已實作／有版面瑕疵 | 主選單右下按鈕觸發版本檢查，有更新時開全螢幕提示 | `src/release/update_checker.gd`、`src/ui/update_notice.gd`、`main_menu.gd:678` |
+| 更新檢查 | 已實作／Android 暫停中 | 主選單按鈕觸發版本檢查，有更新時開全螢幕提示；R9 起平台代號含 Linux 與 Android。Android 暫停後版本 API 不列 Android，已裝 R9 的手機不會收到更新提示 | `src/release/update_checker.gd`、`release_info.gd`、`src/ui/update_notice.gd` |
+| 多平台玩家包 | R9 已發布／原生驗收不齊 | Windows：預設 Compatibility＋ANGLE，本機 EXE 啟動通過；macOS、Linux：未原生啟動；Android：實機未通過，已暫停下載 | GitHub Release `v2026.10.14-r9`、官網 `src/data/releases.ts` |
+| 觸控操作 | 已實作（R10）／實機待驗 | 手機短按看詳情、向上拉才出牌、拖回取消區、手指從按鈕開始也能捲動；圖鑑與組牌點卡先看詳情，提示文字改手機版。R9 只有對戰長按查卡 | `src/ui/mobile_ui.gd`、`card_manager.gd`、`tests/mobile_ui_test.gd` |
+| Android 預覽版 | R10 候選已建／未簽、未實機、暫停下載 | R9：已簽署 arm64 APK 442 MiB，實機回報三項嚴重問題。R10 候選 289 MiB：卡圖按需載入、全螢幕、寬螢幕填滿、返回鍵不關 App、手機畫質設定 | [[#D. Android 預覽版：實機未通過與修正進度\|五-D]]、`docs/android-package-size.md`、官網 commit `a5c5c04` |
 
 - **③ 為什麼這樣解：** 「有六種結界」不等於原案的全場共用領域完全相同；「有種族換位卡」也不等於所有從者都能移動。
 - **④ 舉例：** 月汐引流者能將另一名潮民移到同路另一排空格，且保留已用行動；沒有替其他所有卡新增自由換位按鈕。
@@ -219,7 +223,7 @@ flowchart LR
 | 斷線恢復與伺服器營運 | 已有房間回收及戰績／戰利品待送保存 | 同一局斷線重連未做；維護模式、容量壓測及長期可用性尚未完成 |
 | 對局平衡與 AI | 已有共同行動與流派條件、AI 合法操作 | 收集先後手、對局長度、卡牌使用與派系對戰資料，評估套路強度和 AI 出牌順序；不填虛構勝率 |
 | HD-2D 精美程度 | 三戰場與現代特效已有；十月十三日逐張卡圖審查仍列待重繪、校準與缺圖 | 完成風格修訂及集中驗收；不能宣稱達到《歧路旅人》九成或商業品質 |
-| 音訊與操作品質 | 配樂／環境聲／戰鬥回饋、滑鼠 UI、雙語與無障礙設定已有 | 真人聽感、音量與光強接受；控制器／觸控未完整實作；資源釋放與長時間執行仍需按版本複驗 |
+| 音訊與操作品質 | 配樂／環境聲／戰鬥回饋、滑鼠 UI、雙語與無障礙設定已有 | 真人聽感、音量與光強接受；控制器未實作，觸控只有對戰長按查卡（見五-D）；資源釋放與長時間執行仍需按版本複驗 |
 | 資訊安全 | `tcg_private` 全表開 RLS，讀取政策為 `auth.uid() = account_id`；`tcg_open_packs` 等 SECURITY DEFINER function 的帳號取自 `auth.uid()` 而非參數，並設 `search_path = ''`；client 只帶 publishable key 與服務網址（設計上公開） | R5 期間 `TwilightCodex-Server-*.tar.gz` 曾公開掛在 Release（已移除，見 `removed-server-attachments.json`），可查當時下載次數；R8 成品的憑證掃描待做 |
 
 - **③ 為什麼這樣解：** 「已部署」只能描述有版本證據的服務；資料庫安裝成功也不代表已完成玩家實際登入及轉移卡片流程。
@@ -241,6 +245,60 @@ flowchart LR
 
 - **③ 為什麼這樣解：** 把規則變更錯列為未做，會要求工程恢復已淘汰的流程。
 - **④ 舉例：** 「補領域卡」不再是待辦；若要改成雙方共用全場一張領域，應視為新的規則決策。
+
+### D. Android 預覽版：實機未通過與修正進度
+
+- **① 結論／根本原因：** R9 APK 是桌面版直接匯出，記憶體、預設畫質、觸控與版面都沒有為手機調整；2026-10-15 實機試玩時，對局卡到手機停住、畫面模糊、無法截圖、捲動區滑不動。
+- **② 怎麼解：** 官網先暫停下載；修正已提交到 `origin/main`（`9a6823bb`、`0bc9950d`，版本 `2026.10.15-R10`），候選 APK 289 MiB（R9 為 442 MiB，−34.68%）。程式修正都有自動測試，但**沒有實機驗收、沒有簽章**，所以 Android 仍維持暫停。
+- 「R9 證據」欄的行號以 `8ec17cff` 為準；「進度」欄依 `0bc9950d`、`docs/android-package-size.md` 與 `docs/android-mobile-validation.json`。
+- 尺寸換算是估算：假設 6.4 吋 20:9 手機，720 基準像素對應短邊約 67 mm，1 基準像素約 0.093 mm；Android 建議最小觸控約 7.6 mm（48dp），約等於 82 基準像素。
+- 更正 v2.8：R9 卡圖含子資料夾共 265 張，v2.8 寫的 137 張與約 822 MiB 只算到頂層資料夾，記憶體估算偏低。
+
+| # | 問題 | R9 證據 | 進度（`0bc9950d`） |
+| ---: | --- | --- | --- |
+| 1 | 開局把全部卡圖載入記憶體，而且整局不釋放 | `deck.gd:78,91,135`、`battle_manager.gd:188` | **已修（程式）**：Android 匯出把 `CardData.art` 換成 `deferred_art_path`，只有顯示中的卡面載入；成品稽核 265 張按需解碼後釋放。實機記憶體未量 |
+| 2 | 卡圖無損匯入、沒有縮小版、長邊 1392–1536 px | 卡圖 `.import`；APK 內卡圖沒有 `.etc2` 版本 | **部分**：Android 副本 283 張中 271 張縮到長邊 1024，仍無損；見下方 APK 表第 1 項 |
+| 3 | 預設畫質「中」太重：原生解析度、MSAA 2×、FXAA、陰影 4096 | `app_settings.gd:36` | **已修（程式）**：手機關 FXAA，MSAA 只留給高畫質，陰影 1024／2048，預設 30 FPS 上限、可選 60 |
+| 4 | 景深模糊在 Android 開啟，畫面霧 | APK `rendering.method=mobile`；`main_scene.gd:26` | **已修（程式）**：手機關閉近／遠景模糊 |
+| 5 | 按返回鍵 App 直接關閉 | APK 沒有 `quit_on_go_back` | **已修（程式）**：`config/quit_on_go_back.android=false`；返回先關詳情／指令，再進離開確認 |
+| 6 | 遊戲內無法截圖 | repo 沒有 `FLAG_SECURE` | **待實機**：回報為「無反應／卡住」，可能與記憶體有關，修完要重測 |
+| 7 | 捲動區滑不動 | `ScrollContainer` 內的按鈕吃掉手指拖曳 | **已修（程式）**：手指從按鈕開始也能捲，滑動不會誤選；隱藏捲軸 |
+| 8 | 提示文字寫右鍵／Esc | `battle_ui.gd:863`、`player_guide_content.gd:138` | **已修（程式）**：對戰提示、教學內容與插圖改為手機文案 |
+| 9 | 牌組編輯、圖鑑看詳情只能右鍵 | `deck_builder_panel.gd:314,686`、`card_gallery.gd:132` | **已修（程式）**：手機點卡先看詳情，另按「加入選定卡牌」才改牌組；圖鑑每張卡有詳情按鈕，每頁 12 張 |
+| 10 | 字太小：最小 13 px，約 1.2 mm | `battle_ui.gd:865,1940`、`card_gallery.gd:366` | **部分**：對戰提示 13→18 px；圖鑑徽章、戰鬥紀錄等 13 px 未改，卡面文字不跟 `ui_scale` |
+| 11 | 畫面左右黑邊，每邊約 210 px | APK 沒有 `stretch/aspect` | **已修（設定）**：`window/stretch/aspect.android="expand"`；手機比例截圖未驗 |
+| 12 | 不是全螢幕 | 預設視窗模式 `app_settings.gd:35` | **已修（設定）**：`window/size/mode.android=3`；實機未驗 |
+| 13 | 切到別的 App／鎖螢幕 | `card_manager.gd:890` | **部分**：背景降幀率、保存匿名統計、取消未送出的拖曳；沒有對局存檔或斷線重連 |
+| 14 | 指令按鈕 34 px（約 3.1 mm）；牌桌格子約 5×3.7 mm | `battle_ui.gd:1238`；格子為電腦截圖目測 | **部分**：手機指令按鈕 80 px（約 7.4 mm），指令面板改到角色附近，加大觸控落點容錯；手感待實機 |
+| 15 | 拖曳門檻 12 px（約 1.1 mm），也會打斷長按查卡 | `card_manager.gd:59,927` | **已修（程式）**：手牌短按看詳情、向上 36 px 才出牌；從者拖曳另需 0.15 秒；可拖回取消區 |
+| 16 | 設定頁有視窗模式、解析度等電腦選項 | `settings_panel.gd:15,109` | **已修（程式）**：手機隱藏視窗尺寸選項，改顯示 30／60 FPS |
+| 17 | 主選單有「離開遊戲」 | `main_menu.gd:707` | **已修（程式）**：手機隱藏 |
+| 18 | 遊玩統計把 Android 記成 `unknown` | `guest_play_analytics.gd:78` | **已修**：客戶端與 Supabase allowlist 都接受 Android；正式資料庫已套用 migration 並驗證 |
+
+#### APK 還能再縮的地方
+
+依候選 `candidate-r10-memory.unsigned.apk`（302,969,477 bytes）逐項分組：
+
+| 優先 | 項目 | 現況 | 建議 | 效果 |
+| --- | --- | --- | --- | --- |
+| 1 | 卡圖改有損壓縮（只改 Android 副本） | 265 張 185.6 MiB，佔 64.6%；長邊 1024 px，仍無損 | 匯入改 Lossy，品質先試 0.9；用既有取景比較，再加實機看像素邊緣 | 抽樣 23 張（以 PIL 模擬，非 Godot 編碼器）：q90 平均每張 0.07 MiB，無損 0.61 MiB，PSNR 最低 36 dB。估 APK 289 → 約 125 MiB，以實際匯出為準；只省下載量，不省執行記憶體 |
+| 2 | 頭像圖示縮小 | 12 張 1254×1254，約 19 MiB；找到的兩處都只顯示 30 px，個人資料下拉一次載入 12 張 | Android 副本縮到 128 px | APK 約 −19 MiB；開下拉時記憶體約 −70 MB（估算，RGBA8） |
+| 3 | 字型 | Noto Serif TC Bold＋SemiBold 共 13.5 MiB | 只留一種粗細；或做常用字子集，保留完整字型當後備 | 刪一種約 −6.7 MiB；子集有玩家名稱缺字風險 |
+| 4 | 引擎函式庫 `.so` | 23.3 MiB | 自編模板時關閉沒用到的模組 | 未量測 |
+| — | 角色立牌圖 | 148 張，估約 32 MiB（RGBA8），仍隨卡牌資料全部載入 | 暫不處理 | 影響小 |
+
+#### 發布前關卡
+
+| 關卡 | 現況 |
+| --- | --- |
+| 簽章 | 候選未簽；R9 原簽章在 Windows 電腦，這台 Mac 沒有。新版必須用同一份簽章才能覆蓋安裝 R9；簽章遺失時，已裝 R9 的玩家要先解除安裝，本機資料會消失 |
+| 實機驗收（S24 FE） | **NOT RUN**：幀率、CPU／GPU 時間、記憶體、發熱、截圖、手指操作、背景連線、像素畫質 |
+| 手機比例截圖 | **NOT RUN**：改成 `expand` 後，貼邊介面與 3D 鏡頭在 20:9 的位置沒有看過 |
+| 舊 R9 跨平台嚴格稽核 | **FAIL**：兩份 OFL 授權檔換行不同（CRLF／LF），換行正規化後全文一致；沒有放寬稽核 |
+
+- **③ 為什麼這樣解：** 自動測試只證明邏輯；手機跑不跑得動、看不看得清楚，只能在實機確認。卡圖改有損會改變畫質，最好在實機驗收前做完，讓同一次驗收一起看畫質，不必驗兩次。
+- **④ 舉例：** 卡圖改成按需載入後，對戰中只有手牌、場上與詳情的卡圖留在記憶體。有損壓縮能把 APK 裡的卡圖從 185.6 MiB 降到估計約 22 MiB，但載入後每張仍約 3 MB（1024 px、RGBA8），所以執行記憶體看的是同時顯示幾張，不是 APK 大小。
+- 已確認沒問題：連線走 HTTPS 與 ENet、存檔用 `user://`、已鎖橫向、區網用手動輸入 IP，不需要額外權限。
 
 ## 六、可玩性與對局深度診斷（對齊商業 CCG 差距）
 
@@ -267,7 +325,7 @@ flowchart LR
 
 ## 七、本次核對與後續交接
 
-- **① 結論／根本原因：** 本輪在靜態盤點後完成隨機先手、後手後援與空手自然抽兩張；背景驗證與正式服務驗收分開記錄。
+- **① 結論／根本原因：** v2.8／v2.9 重點是 R9 發布後的 Android 實機失敗：官網已暫停 Android 下載，R10 修正已提交但未簽章、未實機；問題清單、APK 再縮與發布關卡記在五-D。玩法規則沿用 v2.7 的核對。
 - **② 怎麼解：** 保留原設計，更新現況、分類與未完成清單；用以下來源追查，後續完成一項就更新對應狀態。
 
 | 核對 | 本次結果與限制 |
@@ -275,13 +333,15 @@ flowchart LR
 | 程式與卡池 | 已讀對局／目標／牌組／收藏／卡包／帳號／房間／計時／派系相關入口；直接統計 CardData 分類並核對圖鑑 ID 集合 |
 | 卡池分類 | 正式與衍生物分開；不再沿用基礎卡池統計 |
 | 部署 | 讀取 R3-S150／R4 歷史紀錄及 R5 SQL 要求；未查遠端即時狀態、未更新 VM／資料庫／下載包 |
-| 測試 | 本輪執行開局／補牌、AI／按鈕、權威結算、PvP 時鐘及雙進程 LAN 背景測試；實際結果與退出清理警告見 repo `docs/opening-balance-20261013.md`。畫面、公網及新版發行包 **NOT RUN** |
+| 測試 | 本輪沒有跑遊戲測試。v2.8 核對 R9 APK（manifest、`project.binary`）與原始碼；v2.9 分組量測 R10 候選 APK，並抽 23 張卡圖量測有損壓縮。R10 的自動測試結果引用 `docs/android-mobile-validation.json`，本輪沒有重跑。官網兩支測試、`tsc`、`eslint`、`next build` PASS |
 | 文件與美術 | 同步現行規格、雙語教學及部署版本說明；不開新視窗或截圖。其他美術修改分開，未重新打包成品 |
 | 保留區 | 原 v2.0 設計段落保留原文，不刪除未做功能或把延伸提案當作已授權 |
-| 發布狀態 | 工作樹 `2026.10.14-R8`（HEAD `b06fa3d2`）；GitHub Release R8 已發布（2026-10-14 07:44 UTC），R7／R6 已改 Draft，R5 玩家包與伺服器包撤下 |
-| 成品驗證 | R7 的 Windows／macOS 成品實測排除項目皆 0 命中，雜湊與 Release 附件一致；**R8 成品本機沒有，未驗** |
-| 待提交 | `data/cards/` 有 12 張卡的文字清理尚未提交；`docs/card-catalog.html` 仍是舊卡文（五張對不上），與未提交的 `tools/update_card_catalog.py` 同屬一包 |
-| 方法限制 | 用 `strings` 掃成品只對**檔案路徑**與 `.tres` 內容有效；GDScript 是 binary token 加壓縮，掃不到內容。卡面與 hover 的實際觀感 **NOT RUN**，擷圖來源是 1280×720／100% UI／離線訪客的 fixture |
+| 發布狀態 | R9 原始碼 `origin/main` `8ec17cff`（`2026.10.14-R9`）；GitHub Release `v2026.10.14-r9` 已發布（2026-10-14 16:31 UTC），四平台附件與 `SHA256SUMS` 都公開，Android APK 下載 12 次 |
+| 官網 | `cardGame-site` commit `a5c5c04`：Android 狀態改為「暫停下載」，安裝教學頁不提供下載。2026-10-15 讀取線上 `/api/game-version`，只剩 Windows／macOS／Linux |
+| 成品驗證 | R9 Android APK 本機有一份（`build/apk-size-20261015/`），SHA-256 與官網記錄一致；其他三平台 R9 成品本輪未驗。R7 的 Windows／macOS 排除項目實測仍是最近一次完整紀錄 |
+| 工作區 | `origin/main` 在 `0bc9950d`；本機 `main` 在 `8ec17cff`，落後 2 個 commit（R10 修正）。Codex 工作樹另有 14 個檔案進行中（Android 卡圖處理與稽核），尚未提交 |
+| 待提交（沿用 v2.7，仍成立） | 本機 `data/cards/` 有 12 張卡的文字清理未提交；`docs/card-catalog.html`、`docs/README.md`、`tools/README.md` 有修改，`tools/update_card_catalog.py` 未加入 git。`origin/main` 的卡牌總表最後更新是 2026-10-13 |
+| 方法限制 | Android 問題清單是靜態稽核，實機只有 2026-10-15 一次試玩；UI 評估用的是 9/29、10/7 的 1280×720 電腦截圖，沒有手機比例截圖。用 `strings` 掃成品只對**檔案路徑**與設定內容有效，GDScript 掃不到 |
 
 - **③ 為什麼這樣解：** `docs/demo_readiness.md`、README 的個別表格及舊部署頁仍有過時卡數／領域／協定／抽卡描述，本文件不能只抄一份總覽就宣稱現況一致。
 - **④ 舉例：** 先查 `src/net/lobby_protocol.gd` 的十六版，再查同版發行證據；找不到，就保留「新版待發布／待驗收」，而不是套用 R4 已發布結論。

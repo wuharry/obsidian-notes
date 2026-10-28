@@ -6,19 +6,19 @@ tags:
   - hd-2d
   - godot
   - gamedesign
-updated: 2026-10-22
+updated: 2026-10-28
 ---
 
 # 🃏 HD-2D 卡牌對戰 — 現行設計與開發進度
 
 > [!abstract] **文件更新與核對說明**
-> - **更新日期：2026-10-22，整理版 v2.11。** 遊戲已於 2026-10-16 更名為 **紙鴉牌 / Deckmarch**。發布與部署狀態以 `main` `22f47e50` 的紀錄為準；牌桌視覺修正在分支 `codex/battle-visual-language`（程式到 `8391a2ba`），已推到 GitHub 分支，尚未合併 `main`、尚未發布。
-> - **發布現況（R17）：** `2026.10.22-R17`、BUILD `2026102201`、protocol 28。正式專服 2026-10-22 已更新；官網只開放 macOS R17（GitHub `v2026.10.22-r17`），Windows／Linux 熱修中、暫停下載，Android APK 繼續停用。Mac 是 ad-hoc 簽章，未經 Apple 公證。
-> - **Android：** Harvey 已在家把 R15 APK 裝到手機，效能可玩、主觀約 60 分（不是量到 60 FPS）。R16／R17 的 APK 都還沒有實機驗收，公開下載維持停用（見[[#D. Android 預覽版：R15 手機可玩、公開下載停用|五-D]]）。
-> - **本輪新增（v2.11，涵蓋 10-15 之後約 170 個 commit）：** 起手換牌、投降、要抽牌時牌庫已空即判負、回收改向上取整；三種 PvP、天梯段位、免費金幣與每週獎勵（R14 已部署）；30 層試煉之塔與單人續玩（R17 正式服）；新奪牌局暫停；牌桌視覺語言（分支）。
-> - **目前目標：** 2026-11-04 版本凍結與集中試玩（原 10-28，爬塔與續玩併入後延後）。凍結後只修阻擋完賽、資料／權限與錯誤結算。
-> - **真正缺少（玩法）：** 特殊召喚、完整反制堆疊、通用移動／退場、PvP 斷線重連、玩家交易、口袋／探索模式；手動分解／合成只有規格。另外有真人整局、實機完整爬塔與其他平台成品待驗收。
-> - **保存範圍：** 上半部是現況，下半部「原 v2.0 完整企劃案」原文保留；檔名與 `notion-id` 不變。本輪讀程式、資料與 repo 文件核對，沒有開遊戲視窗、沒有截圖、沒有修改遊戲程式。
+> - **更新日期：2026-10-28，整理版 v2.12。** 《紙鴉牌 / Deckmarch》R20 玩家固定來源 `a495b6e6b`，發布紀錄已進 main `4f48c938c`；後續文件提交不重標成品來源。
+> - **發布現況：** Windows／macOS R20（BUILD `2026102801`），Linux／Android 保留 R19（BUILD `2026102501`）。正式專服仍 R19／protocol 28、最低 BUILD `2026102101`；R20 專服因 SSH 問題尚未切換。
+> - **驗收：** 兩桌面平台聯集／資源／公開完整下載通過；macOS 公開空快取下載、掛載、Metal 主選單及退出通過。Windows 原生、完整真人對局／爬塔、手機與持續效能仍待驗；Mac ad-hoc，未 Apple 公證。
+> - **本輪同步：** R19 四段 NPC 部署、場景／視覺分支整合、R20 帳號離線練習、細框教學、英文卡文、獨立震動、公開回報、排版快取與認可音效。main 現有 244 種正式卡＋22 種衍生物。
+> - **進行中：** 骰子付費必爆擊／AI 及後排晶格後續修改尚未提交，未包含 R20；下一輪 UI 音效只供候選試聽。
+> - **進度與目標：** repo `docs/demo_readiness.md` 是待辦權威，本筆記沿用相同編號。11/4 凍結與集中試玩目標保留；發版不代表已凍結。
+> - **保存範圍：** 檔名、notion-id 與原 v2.0 設計逐字保留；本輪僅更新文件，不重跑遊戲驗收、不改學習等級，也不代表 Notion 雲端已同步。
 
 > [!tip] **章節快速導航**
 > - [[#一、閱讀方式與狀態定義|一、狀態定義]]
@@ -45,21 +45,22 @@ updated: 2026-10-22
 | **待驗收** | 已有程式或歷史測試，但缺指定版本的實機／正式服務／真人證據 |
 | **待決策／延後** | 原案與現行規則不同，或已有延後決議；不自動列為必須補做 |
 | **歷史已部署** | 有指定版本的部署紀錄；不代表目前工作樹的新版也已上線 |
-| **來源分支** | 已在功能分支提交並推到 GitHub，尚未合併 `main`，也沒有打包發布 |
+| **來源分支** | 功能分支是否合併要查 ancestry，不能沿用歷史狀態 |
+| **未提交／候選** | 工作區修改或試聽素材，不算 main 已交付或成品已發布 |
 
 - **③ 為什麼這樣解：** repo 的部分總覽仍保留舊版數字；以現行規格、實際程式／資源及有版本的驗收文件交叉核對，避免沿用過時待辦。
-- **④ 舉例：** R17 正式服已是 protocol 28，但只有 macOS 成品通過驗收，所以不能寫成「Windows／Linux R17 已發布」。
+- **④ 舉例：** Windows／macOS 已發布 R20，Linux／Android 仍 R19；macOS 啟動通過不能代替 Windows 原生或完整真人對局。
 
 ## 二、目前遊戲定位
 
-- **① 結論／根本原因：** 本作是《紙鴉牌 / Deckmarch》的可玩原型：有收藏、自組牌、三種 PvP、天梯，以及 30 層 PvE 試煉之塔；正式服已上線，但多數平台的新玩家包仍在熱修。
+- **① 結論／根本原因：** 本作是《紙鴉牌 / Deckmarch》的可玩原型：有收藏、自組牌、三種 PvP、天梯，以及 30 層 PvE 試煉之塔；四平台都有可下載成品，Windows／macOS R20、Linux／Android R19，專服保留 R19。
 - **② 怎麼解：** 保留「站位、魔力回收、從者／法術與反制」核心；玩家用持有卡自組牌，AI 使用內部主題預組；正式獎勵（金幣、段位、爬塔首通）一律由專服與資料庫結算。
 - **③ 為什麼這樣解：** 四路前後排、條件連動與派系效果已能構成準備和兌現；剩餘工作應分成玩法擴充、正式服務驗收與品質（可讀性、平衡、手機）調整，不再把已有功能重做一次。
 - **④ 舉例：** 新玩家可先做引導練習、領起始牌組或抽新手卡，選用合法牌組挑戰 AI 或爬塔；外網正式入場由帳號服務驗證雲端持卡。引擎為 Godot 4.7.2：專案預設 Forward+，Windows 預設 Compatibility＋ANGLE，Android 使用 Mobile 渲染器（APK manifest `org.godotengine.rendering.method=mobile`），macOS 走 Metal（R17 修正 RGB8 貼圖在 Metal 上的執行期轉換）。
 
 ## 三、已實作進度表（優先閱讀）
 
-- **① 結論／根本原因：** 核心對局、卡池連動、收藏組牌、三種 PvP 與爬塔已落地，正式服已更新到 R17；真人整局、實機與多平台成品仍分別待驗。
+- **① 結論／根本原因：** 核心對局、卡池連動、收藏組牌、三種 PvP 與爬塔已落地，R19 正式服已部署四段 NPC，R20 兩桌面平台已發布；完整真人對局、實機及持續效能仍待驗。
 - **② 怎麼解：** 以下列出本次找到的入口，不將歷史測試數字當作本次重新執行結果。
 
 | 系統 | 狀態 | 目前具體內容 | 程式／文件依據（repo 相對路徑） |
@@ -71,35 +72,35 @@ updated: 2026-10-22
 | 條件連動 | 已實作 | 本回合施法、目標狀態、我方場上人數、墓地門檻；副本加值不污染共用卡片 | `src/card/skill_data.gd`、`BattleManager.resolved_skill()` |
 | 靈裝與額外技能 | 已實作 | 裝備加成、新蓋舊、宿主離場；破界杖授予額外技能且有獨立次數 | `attach_equip()`、`src/battle_manager/equipment_skills.gd` |
 | 瞬咒／伏印 | 部分實作 | 事件式反制、私密揭示選擇、公開觸發演出、宿主規則；沒有通用任意長度回應鏈 | `quick_candidate()`、`trigger_target_ward()`、`src/net/online_battle.gd` |
-| 遠程投射物 | 來源分支 | 火球術產生具名投射物，記下已結算的連奏／攻擊加值；只有 BattleManager 扣血，不靠物理碰撞決定命中 | `src/battle_manager/attack_projectile.gd`、`docs/projectile-delivery-20261022.md` |
+| 遠程投射物 | 已整合／已發布 | 具名投射物與既有結算分開；R20 更新認可火球、箭矢與刀刃音效 | `docs/projectile-delivery-20261022.md`、`docs/audio-review-20261028.md` |
 | 死靈流派 | 已實作 | 二十種新增卡、墓地／放逐、復活、反向治療、骨盾、亡語及法術獻祭 | `src/battle_manager/necromancy_effects.gd`、`docs/necromancy_cards_acceptance.md` |
 | 混沌骰術 | 已實作／真人待驗 | 擲骰、爆擊、改骰／重擲、衍生骰靈；雙方可見演出與主持端判定 | `dice_effects.gd`、`dice_presentation.gd`、`docs/dice_presentation_acceptance.md` |
 | 法師七派 | 已實作／持續平衡 | 種族結界、鍊金配方、召還、預言／排序、惑控洞悉、鏡像／替身、變形；10-16 起鍊金鍋爐改放受保護的獨立支援區，不佔前後排卡槽 | `mage_core_effects.gd`、`mage_support_effects.gd`、`src/card_slot/alchemy_zone.gd`、`docs/mage_factions.md` |
 | 六族與結界 | 已實作 | 六種結界、部族條件、進場／交戰收益、限定換位及破界 | `tribal_effects.gd`、`data/cards/domain_*.tres`、`docs/tribal_factions.md` |
-| 單人 AI | 已實作／策略待打磨 | 合法出牌、技能、靈裝、伏印、反制與回魔；10-16 修正出牌順序、站位與回收判斷 | `src/ai/enemy_ai.gd`、`src/card/deck.gd`、`docs/fun-review-20261016/README.md` |
-| 試煉之塔 | 已實作／正式服已上線、實機待驗 | 30 層依序解鎖；每帳號每層首勝送一張卡，重打只算練習；每十層提高核心卡密度與 AI 規劃；爬塔房上限兩間，不佔 PvP 的二十間 | `src/tower/`、`src/server/tower_room.gd`、`tower_service.gd`、`docs/tower-r16-handoff.md` |
+| 單人 AI | 已實作／策略持續改善 | 既有合法策略、三作者各四難度；R19 已接入 NPC，R20 含已提交連動規劃；未提交骰子 AI 另列 WIP | `docs/tower-npc-progression.md`、`docs/qa/npc-tournament-20261024/README.md`、來源 `6cd489067` |
+| 試煉之塔 | R19 已部署／完整實機待驗 | 30 層與首通卡、四段作者／難度配置及固定版本續關；Linux 實際 PCK 五個代表樓層 35 checks PASS | `docs/releases/r19-release-20261025.md`、`docs/tower-npc-progression.md` |
 | 單人續玩 | 已實作／實機待驗 | 一般單人 AI 中途關閉，下次啟動詢問繼續、稍後或放棄；爬塔由專服保存檢查點，斷線不記為輸 | `src/single_player/battle_checkpoint.gd`、`checkpoint_store.gd` |
 | 收藏與自組 | 已實作 | 持有量、搜尋篩選、費用曲線、草稿、刪除、選用與合法性驗證；玩家沒有免費預組備援 | `src/collection/deck_library.gd`、`src/ui/deck_builder_panel.gd` |
 | 抽卡與每日券 | 已實作 | 零卡新手額度、批次抽卡／開包、稀有度權重、滿三張排除、每包第 5 張至少稀有（R14）、每日券累積與結果保存 | `player_collection.gd`、`pack_definition.gd`、`src/ui/card_pack_panel.gd`、`docs/pack-rare-slot-20261019.md` |
 | 玩家成長 | 已實作／R14 已部署 | 免費金幣、金幣主題包、每週包券／自選卡、起始牌組四選一、天梯段位與月賽季；真實付款未啟用 | `src/progression/`、`deploy/account/20261019_progression.sql`、`docs/player-progression-20261019.md` |
 | 紙鴉商店 | 介面已實作／後端待部署 | 推薦、文字（二十句鑽石台詞）、金幣卡包；斗篷與卡背只顯示「敬請期待」；沒有儲值或真實付款 | `docs/paper-raven-shop.md` |
-| 訪客與帳號收藏 | 已實作／完整流程待驗 | 訪客本機練習；登入帳號走 HTTPS RPC／SQL 權威、持卡入場驗證，失敗不回退成本機發卡 | `src/account/`、`src/collection/collection_service.gd`、`deploy/account/README.md` |
-| 多人房間 | 已實作／R17 正式服 | 輕鬆（不奪牌）、天梯（可信票券、Elo）、奪牌（新局暫停）；公開列表、私人房碼、在線人數、快速配對及區網；正式服 protocol 28 | `src/net/net_client.gd`、`src/server/game_server.gd`、`match_room.gd`、`src/net/online_mode_policy.gd` |
+| 訪客與帳號收藏 | R20 增帳號離線練習 | 雲端仍 HTTPS／SQL 權威；已同步帳號收藏與牌組可快取練習，不離線發雲端獎勵或取得正式入場資格 | `src/collection/offline_collection_cache.gd`、`tests/offline_account_solo_test.gd`、來源 `63f4ff0fb` |
+| 多人房間 | R19 正式服／R20 大廳已驗 | 輕鬆／天梯開放、新奪牌暫停；protocol 28；R20 握手、建房／加入／離開 11 項 PASS，完整對局待驗 | `docs/releases/r20-release-20261028.md` |
 | 先後手／後援／空手補牌 | 已實作／平衡待驗 | 隨機先手、後手一次性暫時魔力；自然抽牌空手二張、否則一張；AI 與區網／專服共用規則 | `BattleManager.use_reinforcement()`、`end_turn()`、`docs/opening-balance-20261013.md` |
 | PvP 思考時間 | 已實作 | 主持端計時、最後倒數與逾時換邊；PvE 不限時 | `src/net/pvp_turn_clock.gd`、`src/battle_ui/pvp_turn_clock_widget.gd` |
 | 戰績與奪牌 | 已實作／新局暫停 | 正式勝敗記錄與重送；奪牌每局雙方重新同意，2026-10-21 起伺服器拒絕新奪牌局；舊戰利品、收據與重送保留 | `match_record_service.gd`、`match_reward_store.gd`、`src/net/online_mode_policy.gd` |
-| 新手教學與查閱 | 已實作 | 首戰引導練習（召喚、換回合、攻擊）、遊戲內圖解、卡圖鑑／我的收藏、召喚物與關鍵字說明、墓地與戰鬥紀錄；訪客完成教學可補足 warband 起始牌組 | `src/tutorial/`、`src/ui/player_guide_content.gd`、`effect_glossary.gd`、`src/battle_ui/battle_archive.gd` |
+| 新手教學與查閱 | R20 桌面已發布／真人待驗 | 柔邊聚焦細框、拖曳／選目標暫收說明；手動複製教學回饋；未收到新玩家卡點證據 | `docs/qa/polish-20261028/README.md` |
 | 玩家信箱 | 已實作 | 禮物與獎勵收據；10-18 改版 | `docs/interface-onboarding-20261015.md`、`docs/qa/mailbox-redesign-20261018/README.md` |
-| 載入、設定與音畫 | 已實作／品質待驗 | 分階段載入、繁中／英文、畫質／無障礙、配樂／環境聲、命中／格擋／狀態／死亡回饋；R15 起玩家包先開封面，首次按「開始」才下載素材 | `src/loading/`、`src/settings/`、`src/audio/`、`src/fx/`、`docs/client-content-download.md` |
-| 牌桌可讀性與視覺語言 | 來源分支 | 攻血改用古銅武器／紅寶石美術徽章並全場避讓排位；嘲諷、護盾、掩護用不同形狀；狀態圖示最多三枚＋N；羽毛指向線；像素破盾；墓地名稱改成指到／長按才出現；玩家台詞泡泡指向發話英雄；四種衍生物有專屬 sprite | `docs/battle-visual-language-20261022.md`、`docs/qa/battle-visual-followup-20261022/README.md` |
-| 場景與美術 | 已實作／尚未完成風格驗收 | 森林、洞窟、冰原及城鎮，地貌／光影／環境粒子；10-19 中央光池與接地陰影；卡圖逐張審查仍有待重繪、校準與缺圖 | `src/environment/`、`docs/art/arena-lighting-20261019/README.md`、`docs/art/card-art-audit-20261012/README.md` |
-| 玩家包隔離 | 已實作 | `exclude_filter` 排除 `src/server/*`、`deploy/*`、`tests/*`、`*.pem`／`*.key` 及三組未確認授權素材；R17 macOS 公開附件只有 allowlist 四個檔案，沒有專服或私人檔 | `export_presets.cfg`、`tests/exported_release_test.gd`、`docs/r17-rollout-20261022.md` |
-| 玩家包加密 | 已實作 | `encrypt_pck=true`，自編譯加密範本、卡牌／設定 `.res` include filter；R17 macOS 以正式加密模板匯出；Windows／Linux 需在原電腦用原模板重建 | `export_presets.cfg`、`docs/release-encrypted-template-build.md`、`docs/metal-format-hotfix-20261022.md` |
+| 載入、設定與音畫 | R20 桌面已發布／人工待驗 | 補英文名稱／規則、獨立震動 0–100%、公開問題回報複製與認可音效；回報排除私密資料 | `docs/qa/ui-completion-20261028/README.md`、`docs/audio-review-20261028.md` |
+| 牌桌可讀性與視覺語言 | 已整合／R20 後續改善 | 金色武器、從者綠心／英雄紅心，正對螢幕並留在所屬格位；最多三枚狀態＋N、指令避讓；R20 增投影快取、腳位與動作時間修正 | `docs/qa/polish-20261028/README.md`、`docs/battle-visual-language-20261022.md` |
+| 場景與美術 | 已整合／美術認可待驗 | 森林、洞窟、冰原等十戰場與選單城鎮；R20 光影材質與地面重複感改善；晶格後續修正仍未提交 | 來源 `bedfe17a4`、`docs/art/arena-integration-20261022/README.md` |
+| 玩家包隔離 | R20 聯集通過 | 核心／素材分離，兩平台各 8,738 筆聯集、2,065 項資源檢查；六份公開白名單附件，未公開專服／私人檔 | `docs/releases/r20-release-20261028.md` |
+| 玩家包加密 | 桌面 R20 已發布 | 沿用既有加密模板與保護；這台 Mac 缺 Linux／Android 模板及 Android 原更新簽章，保留兩平台 R19 | `docs/releases/r20-release-20261028.md` |
 | 掛名與著作權 | 已實作 | 未確認授權素材整組不出貨，遊戲內有「著作權聲明」 | `CREDITS.md`、`assets/licenses/third-party-provenance-20261013.md`、`src/ui/credits_panel.gd` |
-| 更新檢查 | 已實作 | 主選單頁尾「檢查更新」；R17 更新 API 只列 macOS，平台暫停時回空清單；手機在清單沒有 Android 時顯示「此平台尚未發布更新」 | `src/release/update_checker.gd`、`release_info.gd`、`src/ui/update_notice.gd` |
-| 多平台玩家包 | macOS R17 已發布／其他平台熱修中 | R17 macOS 私有原生與公開首次下載驗收通過；Windows／Linux 要回家用原加密模板重建並原生驗收；R14 曾發三平台桌面包；R16 附件不覆寫 | GitHub `v2026.10.22-r17`、`docs/r17-rollout-20261022.md`、`docs/metal-format-hotfix-20261022.md` |
+| 更新檢查 | 已發布／分平台 | 官網 API 兩平台 R20、兩平台 R19；固定附件、bytes、SHA-256 及 no-store 核對通過 | `src/release/release_info.gd`、官網 `9a22b76` |
+| 多平台玩家包 | 兩平台 R20／兩平台 R19 | macOS 空快取公開啟動 PASS；Windows R20 原生 NOT RUN；Linux／Android 本輪沒有重打包或實機驗收 | `docs/releases/r20-release-20261028.md`、`docs/releases/r19-release-20261025.md` |
 | 觸控操作 | 已實作（10-21）／新版實機待驗 | 手指移動超過起拖距離就拿起手牌；從者直接拖到目標普攻；短按從者開技能選單；長按看詳情；未選手牌維持約畫面高度 46% 的閱讀大小 | `src/ui/mobile_ui.gd`、`card_manager.gd`、`docs/ui-mobile-20261021.md` |
-| Android 預覽版 | R15 手機可玩／公開停用 | R15 主觀約 60 分可玩；10-21 `main` 分包候選核心約 56 MB＋素材約 83 MB，未簽；R17 要用原 keystore 覆蓋安裝 S24 FE 再實機驗收 | [[#D. Android 預覽版：R15 手機可玩、公開下載停用\|五-D]]、`docs/android-main-build-20261021.md` |
+| Android 預覽版 | R19 原簽章已公開／本輪實機待驗 | v2／v3 驗簽及 R18 憑證比對 PASS；保留同源靜態 APK，R15 可玩回報不當作 R19 實測 | `docs/releases/r19-release-20261025.md` |
 
 - **③ 為什麼這樣解：** 「有六種結界」不等於原案的全場共用領域完全相同；「有種族換位卡」也不等於所有從者都能移動。
 - **④ 舉例：** 月汐引流者能將另一名潮民移到同路另一排空格，且保留已用行動；沒有替其他所有卡新增自由換位按鈕。
@@ -132,23 +133,23 @@ updated: 2026-10-22
 | 回合階段 | 有回合開始／抽牌／結束處理與反制窗口；沒有玩家獨立切換 Main／Attack 階段的完整控制介面 |
 
 - **③ 為什麼這樣解：** 同時分清一般規則與卡牌例外，才不會把角色技能、沙盒或派系操作當成所有牌共有能力。
-- **④ 舉例：** 劍士選免費三傷普攻，或一魔力連擊兩次各二傷；牧師治療後仍可普攻。回收一費卡現在也能得一點暫時魔力（舊規則是零點）；自然魔力十時，十一費卡至少回收一張二費卡即可支付。
+- **④ 舉例：** 劍士選免費三傷普攻，或一魔力連擊兩次各二傷；牧師治療後仍可普攻。回收一費卡現在也能得一點暫時魔力（舊規則是零點）；自然魔力十時，十一費卡至少回收一張一費卡即可支付。
 
 ### 2. 卡池與牌組盤點
 
-- **① 結論／根本原因：** 正式卡池仍是 244 種；衍生物在 `main` 是 21 種，視覺分支新增獨立小惡魔後是 22 種。
+- **① 結論／根本原因：** main 現為 244 種正式卡、22 種衍生物／形態，獨立小惡魔已隨視覺分支整合。
 - **② 怎麼解：** 按 `CardData.card_type` 與 `is_token` 統計，不把衍生物當作可抽正式卡；本次直接數 `data/cards/` 頂層與 `data/cards/tokens/`。
 
 | 卡型 | 正式卡種 | 衍生物／形態 |
 | --- | ---: | ---: |
-| 從者 MINION | 141 | 10（`main` 9） |
+| 從者 MINION | 141 | 10 |
 | 靈裝 EQUIP | 9 | 0 |
 | 秘術 ARCANA | 67 | 11 |
 | 瞬咒 QUICK | 8 | 0 |
 | 伏印 WARD | 13 | 0 |
 | 結界 DOMAIN | 6 | 0 |
 | 設施 SUPPORT | 0 | 1（鍊金鍋爐） |
-| **合計** | **244** | **22（`main` 21）** |
+| **合計** | **244** | **22** |
 
 | 配套資料 | 現況 |
 | --- | --- |
@@ -231,22 +232,24 @@ flowchart LR
 
 ### B. 已有功能，但仍缺驗收或品質收尾
 
-- **① 結論／根本原因：** 現在最接近交付的缺口是 11/4 凍結前的真人整局、實機與多平台成品，以及戰場可讀性與平衡，不是再加一批基礎功能。
-- **② 怎麼解：** 將可查證的部署與本機新版分開，不自行宣稱正式環境已追上工作樹。
+**下一步先完成既有 R20 的服務與真人驗收；任務編號與 repo `docs/demo_readiness.md` 一致。** 只依指定版本的證據更改狀態，不另計完成百分比。
 
-| 工作 | 目前證據 | 還需完成 |
+| 編號 | 進度／證據 | 下一步與完成條件 |
 | --- | --- | --- |
-| 同版客戶端／專服／SQL | R17 正式服 protocol 28（2026-10-22 04:02 UTC 啟動、04:02:29 就緒）；正式 ENet／RPC 握手、暫停奪牌拒收、爬塔 30 項 SQL 交易（模擬角色、合成檢查點）PASS；macOS R17 成品對正式服驗收通過 | Windows／Linux R17 原生重建與驗收；真實 JWT／HTTP、實機完整爬塔、等待過期、併發與耐久性未驗 |
-| 真實帳號流程 | R3-S150 有 OTP 郵件投遞紀錄；R14 起成長資料表與函式已在正式庫 | 玩家輸入驗證碼登入、雲端抽卡、組牌、兩個正式帳號完整對局、金幣／段位收據同步 |
-| 跨裝置與訪客綁定 | 帳號收藏 RPC 已有；訪客本機與雲端分開 | 實際跨裝置登入一致性待驗；訪客進度合併／綁定未完成，不能直接上傳本機卡量 |
-| 斷線恢復與伺服器營運 | 爬塔：專服 lease、檢查點，服務異常 75 秒停止新行動、最遲 90 秒可續接；單人 AI 本機續玩；房間上限 PvP 20、爬塔 2 | PvP 斷線重連未做；伺服器上 AI 每步決策時間、多間爬塔房時的 PvP 延遲尚未量測（11/4 條件） |
-| 對局平衡與 AI | 10-16 樂趣審查：74 場 AI 對局中牌組常沒玩出自己的機制，AI 出牌順序、站位與回收已修；10-21 統計 72 局 1,151 次秘術／結界施放：被反制 9%、有反制卻沒魔力 24%、手上沒反制 66% | 比較「預組多放瞬咒」與「AI 保留反制魔力」；收集先後手勝率與真人回報；不填虛構勝率 |
-| HD-2D 精美程度與可讀性 | Harvey 10-21 手動試玩看不清敵方攻血、嘲諷與護盾；分支已改攻血美術徽章與常駐狀態，Forward+ 與 Compatibility 擷取檢查各 1447 項 PASS（Mac） | 手機實際讀字、真人能否看懂、美術最終認可；仍不能宣稱達到《歧路旅人》九成或商業品質 |
-| 音訊與操作品質 | 配樂／環境聲／戰鬥回饋、雙語與無障礙設定已有；10-21 手機改直接拖曳 | 真人聽感、音量與光強接受；R15 之後的手機操作沒有實機；控制器未實作；資源釋放與長時間執行仍需按版本複驗 |
-| 資訊安全 | `tcg_private` 全表開 RLS，讀取政策為 `auth.uid() = account_id`；`tcg_open_packs` 等 SECURITY DEFINER function 的帳號取自 `auth.uid()` 而非參數，並設 `search_path = ''`；client 只帶 publishable key 與服務網址（設計上公開） | R5 期間 `TwilightCodex-Server-*.tar.gz` 曾公開掛在 Release（已移除）；R14 與 R17 的伺服器包都沒有放公開附件 |
+| REL-01 | 受阻：R20 專服候選本機 PASS，正式服 R19；R20 大廳 11 項 PASS | 恢復 SSH，既有 updater 閒置檢查、備份、smoke、切換與健康檢查；不自動套 SQL |
+| QA-01 | Windows R20 公開附件、聯集及資源通過；原生 NOT RUN | 真機空快取下載／掛載、ANGLE 主選單及正常退出 |
+| QA-02 | 歷史真人、R19 Linux 專服五層與 R20 大廳有證據；R20 完整對局 NOT RUN | 下載→登入→選牌組→正常完賽／獎勵，另測關窗／斷網、爬塔一層與續關，記實際版本 |
+| QA-03 | Android R19 原簽章公開；本輪實機 NOT RUN | 覆蓋安裝、安全區、多指／長按、切 App、續玩與熱機；R20 另需原模板／簽章 |
+| QA-04 | 素材與帳號練習快取有邏輯；真斷網 NOT RUN | 乾淨無素材僅封面／手冊、有素材可本機單人及帳號快取續玩；線上功能清楚拒絕 |
+| QA-05 | R20 教學與手動複製回饋／回報已做；真人 NOT RUN | 觀察新手卡點及朋友第一份問題回報，確認能重現才調提示順序 |
+| QA-06 | 英文語意、圖示與音效工程已有；人工待驗 | 母語校對、陌生玩家圖示辨識、整局聲畫與混音 |
+| PERF-01 | M4／Compatibility／1280×720／HIGH／16 從者／輸入輪詢的短時窗口最差 p95 13.299 ms、p99 15.423 ms | 該輪符合 60 FPS 預算；5 幀逾 16.667 ms、最慢 18.984 ms，120 未達。成品、長時間及手機仍待驗；不推算改前後加速比 |
+| FREEZE-01 | 11/4 凍結及集中試玩目標待完成 | R20 發布不等於凍結；完賽、資料、權限與結算缺陷仍阻擋發布 |
+| WIP-01 | 骰子付費必爆擊／AI／卡文／測試未提交，未包含 R20 | 驗來源、連線及卡表一致後獨立提交 |
+| WIP-02 | 後排晶格／符紋／選取後續修正未提交，未包含 R20 | 固定正反、遠排、小畫面、雪地及低畫質驗收 |
+| WIP-03 | 下一輪 UI 音效為候選試聽 | 認可、接入、整局聽感分開；不混同 R20 已用音效 |
 
-- **③ 為什麼這樣解：** 「已部署」只能描述有版本證據的服務；資料庫交易用模擬角色通過，也不代表玩家實際登入與完整爬塔已驗。
-- **④ 舉例：** 正式爬塔的 SQL 測試在同一個 session 裡模擬 authenticated／service_role，檢查點是合成文字；它證明首通只發一次，不證明手機上能爬完一層。
+來源 QA 的三場景幾何擷取退出另有 4 筆 GL texture leak 未定位。macOS 能開主選單不能代替 Windows 原生、完整真人或手機爬塔；詳細證據見下方交接連結。
 
 ### C. 已改規則，不再當作未完工
 
@@ -268,30 +271,20 @@ flowchart LR
 - **③ 為什麼這樣解：** 把規則變更錯列為未做，會要求工程恢復已淘汰的流程。
 - **④ 舉例：** 「補領域卡」不再是待辦；若要改成雙方共用全場一張領域，應視為新的規則決策。
 
-### D. Android 預覽版：R15 手機可玩、公開下載停用
+### D. Android：保留 R19 原簽章下載
 
-- **① 結論／根本原因：** R15 APK 已在 Harvey 的手機上達到可玩，主觀約 60 分（沒有量 FPS）；之後的 R16／R17 改了協定與功能，新版 APK 都還沒在手機驗過，所以公開下載繼續停用。
-- **② 怎麼解：** 依 R17 發布順序：用原 keystore 覆蓋安裝 S24 FE → 驗一般單人關閉重開、爬塔斷線續接、切帳號、首通與重打、挖孔安全區與觸控捲動 → Harvey 另行授權後才開放下載。
-- R15 是 `2026.10.19-R15`、BUILD `2026101902`、protocol 27；正式服現在要求 protocol 28、最低 BUILD `2026102101`，所以 R15 已無法連正式服。
-- 10-21 `main` 分包候選：核心 APK 55,929,181 bytes（約 56 MB）＋首次下載素材 82,691,944 bytes（約 83 MB），總下載 138,621,125 bytes；未簽，因為這台 Mac 沒有原 keystore。
-- 簽章：原簽章在 Windows 電腦；新版必須用同一份簽章才能覆蓋安裝，遺失時已裝玩家要先解除安裝，本機資料會消失。
+**Android R19 已公開且沿用原更新簽章；10/22 的公開停用狀態已被 R18／R19 取代。** 這台 Mac 缺原簽章與 Android 加密模板，本次沒有 R20 APK。
 
-| 關卡 | 現況 |
+| 項目 | 現況 |
 | --- | --- |
-| R15 手機效能 | Harvey 回報可玩，主觀約 60 分；不是 60 FPS 量測 |
-| R16／R17 APK 實機 | **NOT RUN**；R15 回報不能代替爬塔、續玩與新版操作 |
-| 正式簽章 | 原 keystore 在 Windows 電腦；10-21 Mac 候選未簽；GitHub R16 APK 的 v2／v3 簽章有效，但沒有比對是否與歷史憑證相同 |
-| 公開下載 | 官網與更新 API 都不列 Android；GitHub R16 發布頁仍掛著那份 APK，核心／素材缺檔，不能視為可發布 |
-| 成品聯集 | R16 已上傳的 macOS／Android 核心加素材缺地面 shader include；R17 macOS 重建後 7540 項聯集檢查通過，Android 尚未用 R17 重建 |
+| 版本 | `2026.10.25-R19`、versionCode `2026102501`、protocol 28 |
+| 包體 | APK 58,812,359 bytes；首次素材 108,097,020 bytes，合計 166,909,379 bytes |
+| 簽章 | v2／v3 及與 R18 憑證比對 PASS；沿用 package ID 與更新身分 |
+| 下載 | 官網／更新 API 列 R19，主下載同源靜態 APK，GitHub 保留固定附件 |
+| 本輪裝置 | NOT RUN：覆蓋安裝、觸控、安全區、切 App、續關、發熱及持續效能 |
+| 舊回報 | R15 在 Harvey 手機上主觀約 60 分可玩，不是 R19 實測或 60 FPS |
 
-#### APK 大小
-
-| 階段 | APK | 包內卡圖 | 包內頭像 |
-| --- | ---: | ---: | ---: |
-| R9（已發布，暫停下載） | 463.81 MB | 354.74 MB | — |
-| R10 縮到 1024 px、無損 | 302.97 MB | 194.66 MB | 19.78 MB |
-| R10 有損 0.9＋頭像 384 px | 121.87 MB | 31.26 MB | 2.07 MB |
-| 10-21 `main` 分包（核心＋首次下載素材） | 55.93 MB＋82.69 MB＝138.62 MB | 另載 | 另載 |
+保留 R19 原簽章覆蓋安裝，補 QA-03 驗收；例如簽章有效並不代表長按查卡或切 App 後拖曳取消已通過。以下保留早期修正經過，不當成目前下載狀態。
 
 #### 歷史紀錄：R9 實機失敗與 R10 修正（保留 2026-10-15 狀態）
 
@@ -321,11 +314,11 @@ flowchart LR
 v2.10 的「發布前關卡」（正式簽章、模擬器、S24 FE、20:9 截圖、R9 桌面包白塊推論、OFL 換行稽核）已由本節上方的表取代；當時的尺寸換算假設為 6.4 吋 20:9 手機、1 基準像素約 0.093 mm。
 
 - **③ 為什麼這樣解：** 自動測試只證明邏輯，白塊是在模擬器實際執行才發現的；手機跑不跑得動、看不看得清楚，只能在實機確認。
-- **④ 舉例：** R15 在手機上可玩，不代表 R17 的爬塔續接或直接拖曳在手機上正常；新版要重新安裝驗收。已確認沒問題的部分：連線走 HTTPS 與 ENet、存檔用 `user://`、已鎖橫向、區網用手動輸入 IP，不需要額外權限。
+- **④ 舉例：** R15 在手機上可玩，不代表 R19 的爬塔續接或直接拖曳在手機上正常；新版仍需裝置驗收。已確認沒問題的部分：連線走 HTTPS 與 ENet、存檔用 `user://`、已鎖橫向、區網用手動輸入 IP，不需要額外權限。
 
 ## 六、可玩性與對局深度診斷（對齊商業 CCG 差距）
 
-- **① 結論／根本原因：** 舊診斷中的「完全沒有 combo、抽濾與自組牌」已失效；現在最有證據的三個問題是：牌組機制常沒被玩出來、AI 幾乎不反制，以及斜視角戰場讀不出公開數值。
+- **① 結論／根本原因：** 舊診斷中的「完全沒有 combo、抽濾與自組牌」已失效；歷史證據指出機制未兌現、反制魔力不足與數值難讀；R19／R20 已改善，是否解決真人問題仍需同版複驗。
 - **② 怎麼解：** 改用現有卡組與操作找問題，不從未量測數據推導勝率或畫面品質。
 
 | 舊診斷 | 現在應怎麼看 | 建議下一步（不構成新增實作授權） |
@@ -344,55 +337,38 @@ v2.10 的「發布前關卡」（正式簽章、模擬器、S24 FE、20:9 截圖
 | 主選單「檢查更新」（v2.10） | 已改為頁尾選項（`_make_footer_option("update_check", …)`），舊的字串截斷本輪未複查 | 擷取一次離線失敗畫面確認 |
 | （v2.11）流派沒玩出來 | 10-16 審查 74 場 AI 對局：牌組常沒呈現自己的機制，例如鍊金牌組沒合成也能贏；AI 出牌順序、站位與回收已修 | 集中驗證「秘術連奏」與「鍊金鍋爐」的準備 → 保護 → 發動 → 對手拆解 |
 | （v2.11）反制幾乎看不到 | 72 局中防守方手上有反制的 387 次只有 106 次付得起；19 副預組有 9 副沒有瞬咒，有瞬咒的 10 副也都只放一種 2 費、只擋秘術的瞬咒 | 比較「預組多放瞬咒」與「AI 保留反制魔力」，看「手上有反制卻沒魔力」的比例是否下降 |
-| （v2.11）戰場讀不出公開資訊 | Harvey 10-21 試玩看不清敵方攻血、嘲諷與護盾；視覺分支已改徽章、常駐狀態與目標線 | 用手機與真人確認看得懂（見三、牌桌可讀性）；不要改回文字為主的提示 |
+| （v2.11）戰場讀不出公開資訊 | Harvey 10-21 試玩看不清敵方攻血、嘲諷與護盾；main 已整合徽章、常駐狀態與目標線，R20 增投影快取與面板避讓 | 用手機與真人確認看得懂（見三、牌桌可讀性）；不要改回文字為主的提示 |
 
 - **③ 為什麼這樣解：** 功能數量不等於對局深度；調整應建立在同版本玩家實測，避免用新增系統掩蓋現有卡組的不合理收益。
 - **④ 舉例：** 龍族先讓目標灼燒，再用燼冠王兌現加傷與橫掃；應觀察對手能否移除已灼燒目標、前期能否撐住及付費是否值得，而不是只看有沒有「龍族」名稱。
 
 ## 七、本次核對與後續交接
 
-- **① 結論／根本原因：** v2.11 把 10-15 之後一週的變化補進現況：R12–R17 發版、成長系統、爬塔與續玩、奪牌暫停、11/4 凍結目標、四項規則變更（換牌、回收取整、抽空判負、投降），以及分支上的牌桌視覺修正。
-- **② 怎麼解：** 保留原設計，更新現況、分類與未完成清單；用以下來源追查，後續完成一項就更新對應狀態。
+**v2.12 同步 R20 的已發布範圍，進度權威保留在 repo；原 v2.0 設計及學習評級沒有改動。** 本次只核對程式版本、已提交卡數、發布／部署與來源 QA，沒有重新執行遊戲或代填真人測試。
 
-| 核對 | 本次結果與限制 |
+| 核對 | 結果與限制 |
 | --- | --- |
-| 程式與卡池 | 直接數 `data/cards/` 頂層 244、`tokens/` 22，並與 `main` 比對（21）；讀 `lobby_protocol.gd` `VERSION := 28`、`release_info.gd` R17／BUILD、`recycle_mana()`、`draw_cards()`、`pvp_turn_clock.gd`、`hero.gd` `max_hp`、`Deck.PRESET_IDS`、`data/packs/` |
-| 部署與發布 | 依 repo 紀錄：`docs/r17-rollout-20261022.md`、`metal-format-hotfix-20261022.md`、`releases/20261019-r14/README.md`、`releases/r12-release-20261016.md`、`stability-20261021/results.md`；本輪沒有連線查即時服務，也沒有開 GitHub／官網核對 |
-| 測試 | 本輪沒有跑遊戲測試；文中的 PASS 數字都引用各文件的當次紀錄 |
-| 文件 | 同步更新紙鴉牌 repo 的 `README.md`、`docs/README.md`、`docs/demo_readiness.md`（分支 commit `d9d8cd35`）；`docs/README.md` 補上投降、換牌、投射物、發版紀錄等原本沒有入口的文件 |
-| 保留區 | 原 v2.0 設計段落保留原文，不刪除未做功能或把延伸提案當作已授權 |
-| 發布狀態 | R17 正式服 protocol 28；macOS R17 公開（GitHub `v2026.10.22-r17`、官網 `6a642fb`）；Windows／Linux 熱修中；APK 停用。R14 曾發三平台桌面包（protocol 25），R12 為 protocol 16 |
-| 工作區 | 紙鴉牌 repo 停在 `codex/battle-visual-language`，與 Codex 共用工作樹；`main` 與 `origin/main` 同在 `22f47e50`；視覺分支尚未合併，合併前 `main` 的文件索引看不到這次更新 |
-| 方法限制 | 視覺語言的判斷來自原生擷取紀錄，沒有真人或手機驗證；R15 手機分數是 Harvey 的主觀回報；成品驗收數字沒有重跑 |
+| 固定成品 | R20 `a495b6e6b`／BUILD `2026102801`；protocol 28／最低 `2026102101` |
+| 卡池 | main 正式卡 244、衍生物 22、卡包定義 26、內部預組 19；不把工作區未提交規則寫成 R20 |
+| 分支 | 今天兩分支的提交皆在 main，舊森林／洞窟與視覺分支也已整合；骰子／晶格 WIP 尚未提交 |
+| 玩家發布 | R20 Windows／macOS 公開完整下載、聯集／資源 PASS；Mac 空快取到主選單／退出 PASS；其餘原生與完整對局另列 |
+| 正式服務 | R19 四段 NPC 已部署；R20 專服候選本機 PASS，SSH 問題尚未切換；大廳 PASS 不等於完整對局或獎勵驗收 |
+| 官網 | `9a22b76` Production，兩平台 R20／兩平台 R19、固定附件與 no-store 核對；場景圖片仍保留 R19 擷取來源 |
+| 同步文件 | repo README、文件索引、現況／進度、架構、入口與凍結追蹤；Obsidian 看板與本文件同步；Notion 雲端未操作 |
+| 原設計 | 以下原 v2.0 逐字保留，檔名與 notion-id 不變；待設計機制不是本次新增實作授權 |
 
-- **③ 為什麼這樣解：** `docs/demo_readiness.md` 的十月九日主體與部分舊部署頁仍有過時描述（例如協定 9），本文件不能只抄一份總覽就宣稱現況一致。
-- **④ 舉例：** 先查 `release_info.gd` 得到 R17／BUILD `2026102201`，再到 `r17-rollout-20261022.md` 找到正式服 protocol 28 與 macOS 發布證據；Windows 找不到同版驗收，就保留「熱修中」，不套用 R14 已發布的結論。
+例如工作區已有骰子卡文修改，但它未提交、未包含固定 R20；後續完成提交還需要新版本打包，不能改寫目前附件的功能範圍。
 
-> 連結指向本機 repo；搬移筆記或匯入 Notion 後可能需要重新設定。標「分支」的連結只在本機 repo 切到 `codex/battle-visual-language` 時存在。這次更新的是本機 Obsidian Markdown，不代表 Notion 雲端頁面已同步。
+> 本機 repo 相對連結以筆記與 repo 同在 Harvey 家目錄為前提，搬移後需重新設定；Obsidian Git 更新不代表 Notion 雲端同步。
 
-- [現行玩法規格](../../repo/card-game-demo-4.5--main/README.md)
-- [可搜尋卡牌總表](../../repo/card-game-demo-4.5--main/docs/card-catalog.html)
-- [對局結算與實際規則](../../repo/card-game-demo-4.5--main/src/battle_manager/battle_manager.gd)
-- [棋盤配置](../../repo/card-game-demo-4.5--main/src/battle_manager/board_layout.gd)
-- [連線協定](../../repo/card-game-demo-4.5--main/src/net/lobby_protocol.gd)
-- [R17 正式部署](../../repo/card-game-demo-4.5--main/docs/r17-rollout-20261022.md)、[Metal 熱修與分平台發布](../../repo/card-game-demo-4.5--main/docs/metal-format-hotfix-20261022.md)
-- [R14 發布](../../repo/card-game-demo-4.5--main/docs/releases/20261019-r14/README.md)
-- [穩定版本與 11/4 凍結](../../repo/card-game-demo-4.5--main/docs/stability-20261021/README.md)、[本輪驗收與 AI 反制統計](../../repo/card-game-demo-4.5--main/docs/stability-20261021/results.md)
-- [試煉之塔與單人續玩](../../repo/card-game-demo-4.5--main/docs/tower-r16-handoff.md)
-- [玩家成長與三種對戰](../../repo/card-game-demo-4.5--main/docs/player-progression-20261019.md)
-- [紙鴉商店與台詞](../../repo/card-game-demo-4.5--main/docs/paper-raven-shop.md)
-- [對局樂趣審查](../../repo/card-game-demo-4.5--main/docs/fun-review-20261016/README.md)、[起手換牌](../../repo/card-game-demo-4.5--main/docs/fun-review-20261016/mulligan.md)
-- [投降](../../repo/card-game-demo-4.5--main/docs/gameplay/surrender.md)
-- [牌桌視覺語言（分支）](../../repo/card-game-demo-4.5--main/docs/battle-visual-language-20261022.md)
-- [法師七派](../../repo/card-game-demo-4.5--main/docs/mage_factions.md)
-- [六族結界](../../repo/card-game-demo-4.5--main/docs/tribal_factions.md)
-- [死靈卡與英雄技能延後決議](../../repo/card-game-demo-4.5--main/docs/necromancy_archetype.md)
-- [R5 帳號收藏與第六份遷移](../../repo/card-game-demo-4.5--main/deploy/account/README.md)
-- [專服部署與版本要求](../../repo/card-game-demo-4.5--main/deploy/server/README.md)
-- [R4 歷史正式部署及公開房驗收](../../repo/card-game-demo-4.5--main/docs/multiplayer-r4-20261011.md)
-- [R3-S150 帳號、寄信與成品紀錄](../../repo/card-game-demo-4.5--main/docs/primary-sync-20261011.md)
-- [目前卡圖逐張審查](../../repo/card-game-demo-4.5--main/docs/art/card-art-audit-20261012/README.md)
-- [Demo 現況總覽（主體為 10-09 歷史，頂部有 10-21／10-22 狀態）](../../repo/card-game-demo-4.5--main/docs/demo_readiness.md)
+- [任務與進度權威](../../repo/card-game-demo-4.5--main/docs/demo_readiness.md)、[現行規格](../../repo/card-game-demo-4.5--main/README.md)、[卡牌總表](../../repo/card-game-demo-4.5--main/docs/card-catalog.html)
+- [R20 發布](../../repo/card-game-demo-4.5--main/docs/releases/r20-release-20261028.md)、[R19 四平台／專服](../../repo/card-game-demo-4.5--main/docs/releases/r19-release-20261025.md)
+- [官網下載](https://twilight-codex.vercel.app/#download)、[公開附件](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.28-r20)
+- [11/4 固定範圍](../../repo/card-game-demo-4.5--main/docs/stability-20261021/README.md)、[真人試玩表](../../repo/card-game-demo-4.5--main/docs/stability-20261021/playtest.md)
+- [NPC 四段配置](../../repo/card-game-demo-4.5--main/docs/tower-npc-progression.md)、[共同評測](../../repo/card-game-demo-4.5--main/docs/qa/npc-tournament-20261024/README.md)
+- [R20 功能補齊](../../repo/card-game-demo-4.5--main/docs/qa/ui-completion-20261028/README.md)、[細框／腳位／效能](../../repo/card-game-demo-4.5--main/docs/qa/polish-20261028/README.md)
+- [認可音效](../../repo/card-game-demo-4.5--main/docs/audio-review-20261028.md)、[下一輪提示詞](../../repo/card-game-demo-4.5--main/docs/qa/audio-prompts-next-20261028.md)
+- [學習帳本](../../repo/card-game-demo-4.5--main/docs/LEARNING_LEDGER.md)、[專服部署](../../repo/card-game-demo-4.5--main/deploy/server/README.md)
 
 ---
 

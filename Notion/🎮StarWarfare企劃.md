@@ -6,62 +6,119 @@ tags:
   - godot
   - tps
   - gamedesign
-updated: 2026-10-06
+updated: 2026-11-13
 ---
 
 # 🚀 StarWarfare — 已實作基礎與未來展望
 
-> [!abstract] **文件更新與工作樹說明**
-> - **更新日期**：2026-10-06 ｜ 整理版 v0.6 ｜ 新增 [[#Current 進度（2026-10 最新進展）|Current 進度（2026-10）]]、裝甲流水線與著色器降噪、武器姿態與工蟲 AI；保留未來困境與原 v0.3 展望。
-> - **核對工作樹**：本機 `star-warfare-godot`；`star-warfare` 是原 Unity 復原來源，**不能把原始碼或素材存在直接當成 Godot 功能已完成**。保留原檔名與 `notion-id`。
+> [!abstract] **雙軌開發分流架構 (2026-11-13)**
+> 專案於 2026-11-12 正式確立**雙軌並行體系**：`main` 推進現代化優化重製，`codex/classic-hd` 專注 1:1 高清復刻。
 
-> [!tip] **章節快速導航**
-> - [[#一、定位與狀態|一、定位與狀態]]
-> - [[#二、已實作進度（先看這裡）|二、已實作進度]]
-> - [[#三、規模與現行限制|三、規模與現行限制]]
-> - [[#四、已有換彈範圍|四、已有換彈範圍]]
-> - [[#五、目前遊戲流程與展望關係|五、遊戲流程與展望關係]]
-> - [[#六、必須先討論的原案衝突|六、原案衝突分析]]
-> - [[#七、建議後續順序（供討論）|七、建議開發順序]]
-> - [[#Current 進度（2026-10 最新進展）|Current 進度]]
-> - [[#未來困境與風險（借鏡）|未來困境與風險]]
-> - [[#原 v0.3 完整展望（設計保留區）|八、未來展望與數值框架（原稿）]]
+```mermaid
+graph TD
+    SW_ROOT["🎮 Star Warfare 專案體系"] --> Split{"2026-11-12 雙軌決策"}
+    
+    Split -->|現代重製軌道| Track_Remake["🌿 main (Remake Track)<br/>• 手機優先 / Helldivers 2 節奏<br/>• 獨立裝甲概念 / Viper 現代化<br/>• 射速+30% / 腰射擴散 / 暫停縮放"]
+    
+    Split -->|忠實復刻軌道| Track_Classic["🏛️ codex/classic-hd (Classic Track)<br/>• 1:1 原版玩法 / 數值一致<br/>• 貼圖/場景高清化 / 效能優化<br/>• 恢復原版彈藥/計時/掉落規則"]
+
+    Split -->|歷史成果封存| Archives["📦 歷史封存標籤<br/>• archive/pre-split-main-2026-11-12<br/>• archive/armor-experiments-2026-11-12<br/>• archive/original-hd-prototype-2026-11-12"]
+```
+
+---
+
+## 🗺️ 系統模組與落地狀態圖
+
+```mermaid
+mindmap
+  root((Star Warfare<br/>核心模組))
+    單人戰役與世界
+      Level 1-8 關卡 🟢
+      17 張原場景復原 🟢
+      3000x3000 大陸戰場 🟢
+    戰鬥與射擊手感
+      肩後鏡頭與雙搖桿 🟢
+      5 款換彈樣板 🟡
+      步槍腰射擴散 Bloom 🟢
+      自動武器射速 +30% 🟢
+      工蟲戰術 AI 與節奏調節 🟢
+    裝甲與軍械庫
+      109 件裝甲背包外觀 🟢
+      Viper / Titan 現代面罩 🟢
+      採用裝甲流水線與 Shader 降噪 🟢
+      雙軌裝備與模塊系統 🔴
+    發行相容性
+      Windows ANGLE 啟動防崩潰 🟢
+      即時畫質縮放選單 🟢
+      雙軌分支隔離守則 🟢
+```
 
 ---
 
 ## 一、定位與狀態
 
-- **目前可用基礎**：Godot 離線第三人稱射擊復原版，已有戰役、武器、裝甲、商店、存檔，並加入大陸戰場與部分換彈玩法。
-- **未來目標**：在此基礎上發展手機優先、PC 輔助的 PvE／PvP 射擊遊戲，建立商店與寶箱雙軌裝備、配件、模塊與質變。
-- 未來展望不因尚未實作而刪除；現有復原系統也不直接算成新設計的完成品。
-
-| 狀態標記 | 具體意義定義 |
-| :--- | :--- |
-| **已實作** | 現行程式與入口有對應功能，本次未重新遊玩驗收 |
-| **部分實作** | 有基礎或限定範圍，但尚未完成展望中的完整系統 |
-| **未實作** | 尚無完整可用系統，保留在展望 |
-| **待驗收** | 需要實機、畫面、連線或行為驗證 |
-| **待討論** | 規格矛盾或產品取捨尚未定案，不自行改動原值 |
+| 狀態標記 | 具體意義定義 | 當前涵蓋範疇 |
+| :--- | :--- | :--- |
+| **🟢 已實作** | 程式碼、資產與入口已落地並通過自動化檢驗 | 8 關戰役、17 關場景、47 把武器、109 件裝甲、工蟲 AI、ANGLE 啟動防崩潰 |
+| **🟡 部分實作** | 已有核心樣板，但未全面覆蓋所有型號 | 5 款換彈樣板、補給品購買但戰鬥施放未接全 |
+| **🔴 未實作 (展望)**| 保留於未來設計庫，暫不開工避免分散精力 | 雙軌武器配件樹、質變池、真人家用/天梯連線、付費經濟 |
 
 ---
 
-## 二、已實作進度（先看這裡）
+## 二、雙軌分工與實作對照表
 
-| 系統模組 | 實作狀態 | 目前具體內容 | 程式依據（Godot repo 相對路徑） |
-| :--- | :--- | :--- | :--- |
-| **單人戰役** | 🟢 已實作 | 原關卡載入、敵人波次、Boss、勝敗、掉落與進度 | `scripts/game/game_world.gd`、`scripts/core/game_state.gd` |
-| **原場景復原** | 🟢 已實作／視覺待複驗 | 原關卡地形、材質、碰撞、出生點、路徑節點與選單縮圖 | `assets/models/levels/`、`scripts/core/unity_collider_builder.gd` |
-| **第三人稱操作** | 🟢 已實作 | 肩後鏡頭、移動、衝刺、聚焦瞄準、射擊、切槍、受傷與護盾 | `scripts/game/player.gd` |
-| **武器系統** | 🟢 已實作／持續調優 | 原武器資料、射擊類型、武器模型與攻擊回饋；修復武器姿態、手套縮放、背包材質；弓箭保持橫持並移除程序刀鞘；步槍腰射準心擴散（Bloom）演出；突擊步槍與自動武器持續射速提升 30% | `GameState.WEAPON_ROWS`、`scripts/game/projectile.gd`、`docs/WEAPON_AIMING.md` |
-| **彈匣與換彈** | 🟡 部分實作 | 指定武器具不同換彈方式、彈匣／彈殼演出，散彈可中斷裝填 | `GameState.RELOAD_PROFILES`、`scripts/game/player.gd` |
-| **裝甲／背包／套裝** | 🟢 已實作／管線打通 | 原裝甲購買、裝備、四部位套裝、背包容量與外觀；Strike、Titan、Hydra、Tank、Fortune、Viper 等裝甲資產已由 `adopted armor scenes` 整合至 runtime visuals，著色器光照降噪，Titan 圓形面罩精修與實機驗收 | `scripts/core/armor_catalog.gd`、`scripts/core/game_state.gd`、`docs/art/` |
-| **裝甲主動技能** | 🟢 已實作 | 原技能效果、持續時間、冷卻與 HUD 顯示 | `scripts/game/armor_power_controller.gd`、`scripts/ui/hud.gd` |
-| **商店與軍械庫** | 🟢 已實作 | 武器/裝甲分類、解鎖階級、Credits／Mithril 購買與持有預覽；軍械庫彈窗套用金屬質感 | `scripts/ui/main_menu.gd`、`scripts/ui/unity_equipment_shell.gd` |
-| **補給品商店** | 🟡 部分實作 | 已有分類、購買、庫存上限與保存；尚未接完整戰鬥使用接線 | `scripts/core/props_catalog.gd`、`GameState.purchase_prop()` |
-| **敵方 AI／難度** | 🟢 已實作／持續調優 | 追擊與路徑、戰術難度設定、包抄／攻擊名額／預警行為；統一工蟲手繪甲殼風格並接入戰術 AI 與節奏調節 | `scripts/game/enemy.gd`、`GameState.DIFFICULTY_PROFILES` |
-| **大陸戰場** | 🟢 已實作／體驗待驗 | 連續地形、原場景地標、動態載入與回收、區域遭遇 | `scripts/game/expanse_world.gd`、`expanse_terrain.gd` |
-| **存檔、語言與畫質** | 🟢 已實作 | 本機 JSON 保存、繁中／英文、即時畫質縮放；戰鬥中暫停選單；Windows Compatibility 驅動切換為 ANGLE 解決 NVIDIA 啟動崩潰 | `scripts/core/game_state.gd`、`scripts/core/localization.gd` |
-| **多輸入與音畫** | 🟢 已實作／實機待驗 | 鍵鼠、控制器、手機雙搖桿；復原音樂音效、角色動畫、HUD | `scripts/ui/virtual_joystick.gd`、`scripts/core/audio_director.gd` |
+```mermaid
+classDiagram
+    class RemakeTrack {
+        +Branch: main
+        +Target: Mobile-first PvE/PvP
+        +Combat: Fast-paced, Reticle Bloom, +30% Firerate
+        +Art: Adopted Armors, Modern Shaders, Denoised Lighting
+        +Viper: Modern cartoon variant with custom visor
+    }
+    class ClassicTrack {
+        +Branch: codex/classic-hd
+        +Target: 1:1 SW1 Faithful Reproduction
+        +Combat: Pure original formula & frame timing
+        +Art: Original models with HD upscaled textures
+        +Economy: Original ammo purchasing & Mithril drops
+    }
+    RemakeTrack <|-- SW_ROOT : 衍生優化
+    ClassicTrack <|-- SW_ROOT : 忠實還原
+```
+
+| 系統模組 | 實作狀態 | main (重製版) 現況 | codex/classic-hd (復刻版) 要求 | 依據路徑 |
+| :--- | :--- | :--- | :--- | :--- |
+| **主幹分支** | 🟢 已分軌 | 探索現代手感、手機優先、獨立裝甲設計 | 嚴格維持原版數值與規則，不搬入重製調整 | `docs/BRANCHES.md` |
+| **裝甲外觀** | 🟢 已定案 | Viper 採現代模型與純色面罩；其餘套裝陸續換新 | 全部使用原版來源模型與既有貼圖 | `.harness/project.md` |
+| **武器手感** | 🟢 已實作 | 步槍腰射擴散、自動武器射速 +30%、弓箭橫持修正 | 嚴格維持原版射速與彈道參數 | `docs/WEAPON_AIMING.md` |
+| **敵方戰術** | 🟢 已實作 | 工蟲手繪甲殼風格統一、接入節奏調節與戰術包抄 | 原版敵人巡邏與追擊行為 | `scripts/game/enemy.gd` |
+| **底層相容** | 🟢 已實作 | Windows 相容驅動採 ANGLE，徹底修復 NVIDIA 啟動崩潰 | 同步採用 ANGLE 修復 (不改數值) | `commit d82728d4` |
+
+---
+
+## 三、已有換彈樣板矩陣
+
+```mermaid
+pie title 換彈樣板類型分佈
+    "步槍彈匣 (gun00: 1.55s)" : 30
+    "狙擊彈匣 (gun35: 2.18s)" : 5
+    "散彈逐發裝填 (gun06: 0.68s/發)" : 6
+    "榴彈轉鼓 (gun14: 2.05s)" : 4
+    "火箭裝填 (gun11: 2.42s)" : 1
+```
+
+---
+
+## Current 進度（2026-11 雙軌定案）
+
+```mermaid
+flowchart TD
+    Step1["1. 底盤穩定與雙軌分流 🟢<br/>(2026-11-12 完成分支切換與封存)"] --> Step2["2. 裝甲與美術資產管線 🟢<br/>(Strike/Titan/Viper 整合完成)"]
+    Step2 --> Step3["3. 手感打磨與 AI 節奏 🟢<br/>(準心擴散、射速+30%、工蟲 AI)"]
+    Step3 --> Step4["4. 統一生長數學與配件樹 🔴<br/>(待討論 2.3x DPS 上限衝突)"]
+    Step4 --> Step5["5. 商業雙軌經濟與連線 🔴<br/>(維持嚴格範圍控制，暫不開工)"]
+```
 
 ---
 

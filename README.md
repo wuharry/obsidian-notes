@@ -51,7 +51,7 @@ graph TB
 
 | 專案名稱 | 最新版本 | 核心引擎 / 平台 | 當前里程碑 | 關鍵進展與驗證焦點 | 詳情連結 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **🚀 Star Warfare** | `v0.7` (雙軌定案) | Godot 4.x (Angle/Compat) | 雙軌分支分割完成 | `main` 現代重製 vs `classic-hd` 1:1 復刻；裝甲流水線與工蟲 AI 落地 | [[Notion/🎮StarWarfare企劃\|專案詳情]] |
+| **🚀 Star Warfare** | `v0.7` (雙軌定案) | Godot 4.x (Angle/Compat) | 雙軌分支分割完成 | `main` 現代重製 vs `classic-hd` 1:1 復刻；裝甲流水線與工蟲 AI 落地；[[Notion/StarWarfare_原作授權洽詢進度\|4輪授權洽詢進度]] | [[Notion/🎮StarWarfare企劃\|專案詳情]] · [[Notion/StarWarfare_原作授權洽詢進度\|授權紀錄]] |
 | **🃏 紙鴉牌 Deckmarch** | `R26` (Client) / `R25` (Server) | Godot 4.7.2 Forward+ / Multi | 多平台商用驗收 | Android AAB 包、iOS 原生 Keychain、TOTP 管理鑑權、同網防刷 | [[Notion/HD-2D 卡牌對戰 (暫定) - 遊戲設計文件 v2.0\|專案詳情]] |
 | **🎲 2D-3D RPG / TRPG** | `v2.4` (24 場實測) | trpg-server + WebGL/Canvas | 第二章直開 + 觸發結算 | 主線線索引擎硬結算、敘事持有物、結構化回合紀錄、HD-2D 城鎮雙軌 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案\|專案詳情]] |
 
@@ -76,6 +76,10 @@ flowchart LR
 
     B -->|歷史成果存檔| E["📦 封存標籤 (archive/pre-split-*)"]
 ```
+
+> [!note] **⚖️ 原作資產授權洽詢追蹤 (尹先生 / Freyr Games)**
+> - **完整紀錄**：[[Notion/StarWarfare_原作授權洽詢進度|📄 檢視 4 輪洽詢時序與法律對衝規劃]]
+> - **最新進展**：已向 Freyr Games 官方與 Google Play 窗口尹先生發送 4 輪信件（最後寄出：2026-11-05），目前維持 0 商用法律風險的分軌防線。
 
 ---
 

@@ -4,84 +4,141 @@ tags:
   - dashboard
   - gamedesign
   - index
-updated: 2026-10-28
+updated: 2026-11-13
 ---
 
 # 🎮 遊戲企劃與開發筆記總覽 (Vault Dashboard)
 
-> [!abstract] **工作區導航說明**
-> 本庫收錄目前進行中的三個核心專案：**Star Warfare 射擊遊戲復原**、**HD-2D 戰略卡牌對戰**、以及 **Web TRPG / 2D-3D 動作 RPG**。
-> 所有文件均已針對 **Obsidian** 閱讀最佳化，支援雙向鏈接（`[[...]]`）、即時預覽（Page Preview）、大綱導航（Outline）與互動式狀態看板。
+> [!abstract] **工作區視覺化導航**
+> 本庫收錄三大核心專案之即時狀態與規格架構，全面採用視覺化圖表與矩陣呈現。
 
 ---
 
-## 🚀 核心專案快速導航
+## 🗺️ 專案總覽拓撲圖 (Project Map)
 
 ```mermaid
-graph TD
-    Dashboard["主看板 (Dashboard)"] --> StarWarfare["🎮 StarWarfare 企劃<br/>(Godot TPS 復原與延伸)"]
-    Dashboard --> CardGame["🃏 HD-2D 卡牌對戰<br/>(Godot 4.7 戰略對局)"]
-    Dashboard --> ActionRPG["🎲 Web TRPG / 動作 RPG<br/>(世界觀、規則與實測)"]
-    
-    ActionRPG --> TRPG_Bugs["🐛 Bug 追蹤與手動驗收總表"]
-    ActionRPG --> TRPG_Runs["📜 實測場次 (RUN-001 ~ RUN-024)"]
-    ActionRPG --> TRPG_Rules["⚖️ 判定原則與線索備援"]
+graph TB
+    subgraph Hub["🎯 遊戲專案核心矩陣 (2026-11-13)"]
+        direction TB
+        SW["🚀 Star Warfare<br/><b>雙軌制開發 (Godot TPS)</b>"]
+        CG["🃏 紙鴉牌 Deckmarch<br/><b>R25/R26 多端發行 (Godot 4.7)</b>"]
+        RPG["🎲 2D-3D TRPG<br/><b>雙軌渲染與引擎硬結算 (Web)</b>"]
+    end
+
+    subgraph SW_Tracks["Star Warfare 雙軌架構"]
+        SW_Main["🌿 main: 現代化重製 (Mobile-First / HD2)"]
+        SW_Classic["🏛️ codex/classic-hd: 1:1 高清復刻版"]
+    end
+
+    subgraph CG_Ecosystem["紙鴉牌 生態與管線"]
+        CG_Client["📱 多端發布: Windows / Mac (R26) / Android (AAB) / iOS"]
+        CG_Sec["🛡️ 安全與對局: TOTP 鑑權 / 同網防刷 / 梯位天梯"]
+    end
+
+    subgraph RPG_Pipeline["Web TRPG 執行管線"]
+        RPG_Core["⚙️ 規則硬結算: 觸發規則 (Trigger Rules) + 敘事持有物"]
+        RPG_Town["🏰 城鎮雙軌: HD-2D 等角 3D / 純 2D 像素降級"]
+    end
+
+    SW --> SW_Tracks
+    CG --> CG_Ecosystem
+    RPG --> RPG_Pipeline
 ```
 
 ---
 
-### 1. 🎮 Star Warfare — 復原基礎與未來展望
-> [!info] **專案狀態**：Godot 離線復原版推進中｜**當前版本**：v0.6 整理版（2026-10-06）
-> - **專案文檔**：[[Notion/🎮StarWarfare企劃|🎮 StarWarfare 企劃完整文件]]
-> - **核心內容**：
->   - **現行已實作**：單人戰役（8 關）、原場景復原（17 張關卡）、47 把武器、裝甲與背包（109 件）、5 款換彈樣板、大陸戰場（3000×3000）。
->   - **近期重大更新（2026-10）**：
->     - **裝甲流水線與著色器降噪**：Strike、Titan、Hydra、Tank、Fortune、Viper 等裝甲資產已由 `adopted armor scenes` 整合至 runtime visuals，打通整合測試；著色器光照降噪，Titan 圓形面罩精修與實機驗收。
->     - **戰鬥手感與武器姿態**：修正弓箭橫持與移除程序刀鞘；手套縮放與背包材質修復；步槍腰射準心擴散（Bloom）演出；突擊步槍與自動武器持續射速提升 30%。
->     - **敵方 AI 與相容性**：工蟲手繪甲殼風格統一並接入戰術 AI 與節奏調節；戰鬥中暫停選單與即時畫質縮放；Windows Compatibility 驅動切換為 ANGLE 解決 NVIDIA 啟動崩潰。
->   - **待解決衝突**：[[Notion/🎮StarWarfare企劃#六、必須先討論的原案衝突|數值 2.3x 上限與終局公式衝突、等級配件樹範圍]]。
->   - **未來目標**：商店與隨機寶箱雙軌制、模塊與質變系統、手機優先操作體驗。
+## 📊 三大專案狀態矩陣 (Status Matrix)
+
+| 專案名稱 | 最新版本 | 核心引擎 / 平台 | 當前里程碑 | 關鍵進展與驗證焦點 | 詳情連結 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **🚀 Star Warfare** | `v0.7` (雙軌定案) | Godot 4.x (Angle/Compat) | 雙軌分支分割完成 | `main` 現代重製 vs `classic-hd` 1:1 復刻；裝甲流水線與工蟲 AI 落地 | [[Notion/🎮StarWarfare企劃\|專案詳情]] |
+| **🃏 紙鴉牌 Deckmarch** | `R26` (Client) / `R25` (Server) | Godot 4.7.2 Forward+ / Multi | 多平台商用驗收 | Android AAB 包、iOS 原生 Keychain、TOTP 管理鑑權、同網防刷 | [[Notion/HD-2D 卡牌對戰 (暫定) - 遊戲設計文件 v2.0\|專案詳情]] |
+| **🎲 2D-3D RPG / TRPG** | `v2.4` (24 場實測) | trpg-server + WebGL/Canvas | 第二章直開 + 觸發結算 | 主線線索引擎硬結算、敘事持有物、結構化回合紀錄、HD-2D 城鎮雙軌 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案\|專案詳情]] |
 
 ---
 
-### 2. 🃏 紙鴉牌 Deckmarch — 現行設計與進度追蹤
+## 🚀 1. Star Warfare：雙軌開發架構
 
-> [!info] **狀態**：Windows／macOS R20、Linux／Android R19；正式專服 R19／protocol 28｜**文件**：v2.12（2026-10-28）
-> - **設計與進度**：[[Notion/HD-2D 卡牌對戰 (暫定) - 遊戲設計文件 v2.0|🃏 現行規則、已完成與待驗收]]。
-> - **已完成**：四路前後排十六格、自然魔力十、244 種正式卡＋22 種衍生物、收藏自組、輕鬆／天梯、30 層爬塔及續玩；R19 四段 NPC 已部署，新奪牌局暫停。
-> - **R20**：帳號離線練習、教學細框、英文卡文、獨立震動、公開回報、排版快取、角色腳位／動作、戰場光影及認可音效；原場景／視覺分支已整合。
-> - **優先追蹤**：REL-01 專服、QA-01 Windows 真機、QA-02 完整對局／爬塔；接著 QA-03 手機、QA-04 真正斷網、QA-05 新手／回報、QA-06 人工品質與 PERF-01 持續效能。狀態以 [repo 進度表](../repo/card-game-demo-4.5--main/docs/demo_readiness.md) 為準。
-> - **進行中**：WIP-01 骰子／AI、WIP-02 晶格未提交且未包含 R20；WIP-03 下一輪 UI 音效只供候選試聽。
-> - **界線**：公開附件、Mac 空快取啟動及大廳 PASS；Windows 原生、完整真人、手機、母語與持續效能待驗。11/4 凍結目標保留；`LEARNING_LEDGER.md` 的學習等級不變。
+```mermaid
+flowchart LR
+    A[Star Warfare 專案倉庫] --> B{開發主線分軌 2026-11-12}
+    
+    B -->|現代優化主線| C["🌿 main (Remake Track)"]
+    C --> C1["📱 手機優先 + PC 輔助"]
+    C --> C2["🎯 參考 Helldivers 2 / Warfare 射擊節奏"]
+    C --> C3["🎨 Viper 現代獨立重製 + 純色面罩"]
+    C --> C4["⚡ 自動武器射速 +30% 與腰射擴散"]
 
----
+    B -->|忠實復刻主線| D["🏛️ codex/classic-hd (Classic Track)"]
+    D --> D1["🔒 嚴格 1:1 原版玩法與數值"]
+    D --> D2["🖼️ 高清貼圖與場景修復 (無改版數值)"]
+    D --> D3["🧪 逐項核對原版彈藥/計時/掉落"]
 
-### 3. 🎲 2D-3D 動作 RPG & Web TRPG
-> [!info] **專案狀態**：`/try` 單人網頁版活躍測試中（累計 24 場實測）｜**引擎後端**：`ai-wrapper/apps/trpg-server`
-> - **主企劃文檔**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案|🎲 動作 RPG 企劃案與 TRPG 進度]]
-> - **現行核心進度**：
->   - **規則與主線硬結算**：實作訪客由「第二章開局」；第一章至第四章主線線索改由「引擎觸發規則」硬結算取代模型自主主張；每回合保留結構化回合紀錄；修復敘事反向約束與場景物件判定（場上道具不再被誤判為「你沒有」）。
->   - **道具與任務層**：新增「敘事持有物」層，修復交劍任務 (BUG-09 驗收通過)；出格行為規則防線（封鎖盜竊/非法載具/司法通報盤查）。
->   - **HD-2D 渲染與城鎮**：HD-2D 等角立體渲染與純 2D 像素無 WebGL 雙軌備援管線；可操作城鎮角色、點擊移動、馬車閉環避障巡邏、建築非阻斷資訊卡；公會短篇任務循環與雙漏斗路由；純 CSS 3D 擲骰。
->   - **生態與記憶**：NPC 個人生活動機與邊界、怪物生態習性與戰鬥持續態度記憶（停手/退開/重啟敵意）、四項第一章委託、術式面板與故事匯出。
-> - **測試與驗收中心**：
->   - 🐛 **Bug 總表與手動驗收**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/BUGS|TRPG Bug 權威追蹤總表]]（已收錄 B001–B017 與 BUG-20260922-04/09 等最新修復與驗收）
->   - 📑 **實測場次索引**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README|場次與測試記錄索引]]（累計至第 24 場 RUN-024）
->   - ⚖️ **判定原則與依據**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/判定原則與參考|判定原則與參考資料]]
->   - 🧠 **NPC 記憶系統**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/NPC反應與互動記憶規劃|NPC 反應階段與互動記憶規劃]]
->   - 🔍 **線索備援盤點**：[[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/參考資料/B009-第一章線索備援盤點|B009 第一章線索備援盤點]]
+    B -->|歷史成果存檔| E["📦 封存標籤 (archive/pre-split-*)"]
+```
 
 ---
 
-## ⚡ 實測場次快速直達
+## 🃏 2. 紙鴉牌 (Deckmarch)：商用發布與安全架構
 
-| 場次代號 | 記錄日期 | 角色與模式 | 結果與關鍵觀察 | 快速跳轉 |
-| :--- | :--- | :--- | :--- | :--- |
-| **RUN-001** | 2026-09-07 | 銀蹄酒館（未定角色） | 止於礦坑外，回報過早進入遊蕩結局；引出 B001–B008 等核心問題 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/場次/RUN-001-銀蹄酒館/結果與觀察\|📄 檢視 RUN-001]] |
-| **RUN-003** | 2026-09-08 | 你慢吧 / 賞金獵人 | 廢棄磨坊與巨蜘蛛戰鬥倒下；驗證部位耐傷與指定部位規則（B017） | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/場次/RUN-003-廢棄磨坊/結果與觀察\|📄 檢視 RUN-003]] |
-| **RUN-021** | 2026-09-30 | 瀏覽器連續實測 | 盤點場景物件與第一章線索卡點，定案引擎終極目標 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
-| **RUN-022** | 2026-10-01 | 密室與主線收束 | 驗證場景物件修復與密室主線收束阻塞分析 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
-| **RUN-024** | 2026-10-02/05 | 第二章開局實測 | 驗證訪客第二章開局與主線觸發規則，完成資料覆核更正 | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
+```mermaid
+flowchart TD
+    subgraph Multiplatform["🌐 多端發行矩陣 (R25 / R26)"]
+        direction LR
+        Win["🪟 Windows (R26 打包)"]
+        Mac["🍏 macOS (R26 Metal)"]
+        And["🤖 Android (AAB Gradle)"]
+        iOS["🍎 iOS (Keychain 登入)"]
+    end
+
+    subgraph Security_FairPlay["🛡️ 商業服務與防作弊防線"]
+        TOTP["🔐 管理員 RPC 全面 TOTP 雙因子驗證"]
+        AntiCheat["🚫 梯位/天梯 同網段帳號嚴格隔離防刷"]
+        Atomic["🗑️ 符合法規之帳號與關聯資料原子刪除"]
+        Wallet["💎 測試鑽石申領與審計錢包發放"]
+    end
+
+    subgraph Gameplay["⚔️ 核心戰場手感"]
+        Board["4路 16格 前後排戰場"]
+        Juice["幾何召喚法陣 + Tween 位移衝撞 + Hit Stop"]
+        Archetypes["快攻灼燒流 vs 死靈召喚流"]
+    end
+
+    Multiplatform --> Security_FairPlay --> Gameplay
+```
+
+---
+
+## 🎲 3. Web TRPG / 2D-3D 動作 RPG：引擎硬結算與城鎮管線
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Player as 玩家行動
+    participant Engine as 規則引擎 (Trigger Rules)
+    participant Narrative as 敘事生成 (Narrative Layer)
+    participant Memory as 回合日誌與持有物層
+
+    Player->>Engine: 自由文字 / 探索 / 地圖移動
+    Engine->>Engine: 觸發規則判定 (非模型主張)
+    alt 滿足主線/道具線索
+        Engine->>Memory: 寫入「敘事持有物」與世界狀態
+        Engine->>Narrative: 派發確定結果標籤 (不可被否定)
+    else 出格或無效行為
+        Engine->>Narrative: 出格防線攔截 (禁止憑空捏造)
+    end
+    Narrative-->>Player: 輸出連貫敘事 (回饋一致)
+    Memory->>Memory: 留存單回合格局 Log (出 Bug 直接調閱)
+```
+
+### 📜 TRPG 實測驗收直達看板
+
+| 場次代號 | 驗收核心 | 成果與狀態 | 跳轉連結 |
+| :--- | :--- | :--- | :--- |
+| **RUN-024** | 訪客第二章直接開局 | 🟢 驗證通過（跳過第一章重複成本，主線觸發規則鎖定） | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
+| **RUN-022** | 密室與場景物件修復 | 🟢 驗收通過（場上物件不再誤判為「你沒有」，密室收束解除） | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
+| **RUN-015** | 第一章交劍與持有物 | 🟢 BUG-09 通過（新增敘事持有物層，不看措辭定成敗） | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/README#📜-實測場次索引-session-runs\|📄 查看索引]] |
+| **RUN-001~03**| 酒館啟程與磨坊蜘蛛 | 🟡 早期基準場次（確立出格防線、部位耐傷與擲骰原則） | [[Notion/專案名稱：(待定) 2D-3D 動作 RPG 企劃案/TRPG測試/場次/RUN-001-銀蹄酒館/結果與觀察\|📄 檢視 RUN-001]] |
 
 ---
 

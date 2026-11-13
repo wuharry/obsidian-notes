@@ -236,6 +236,7 @@ graph LR
 
 > 連結指向同一工作區的本機專案；搬移筆記或匯入 Notion 後可能需重新設定路徑。
 
+- [⚖️ 原作資產授權洽詢進度（尹先生／Freyr Games 4 輪紀錄）](StarWarfare_原作授權洽詢進度.md)
 - [復原範圍與說明](../../repo/star-warfare-godot/README.zh-TW.md)
 - [武器與換彈目錄](../../repo/star-warfare-godot/scripts/core/game_state.gd)
 - [原裝甲目錄](../../repo/star-warfare-godot/scripts/core/armor_catalog.gd)
